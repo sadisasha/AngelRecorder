@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="PREFERENCE_SERVICE"
+        android:title="@string/preference_serviceCategoryTitle" >
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="PreferenceIsServiceEnabled"
+            android:summary="@string/preference_isServiceEnabledSummary"
+            android:title="@string/preference_isServiceEnabledTitle" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="PREFERENCE_AUDIO"
+        android:title="@string/preference_audioCategoryTitle" >
+        <ListPreference
+            android:defaultValue="4"
+            android:dialogTitle="@string/preference_audioSourceTitle"
+            android:entries="@array/audioSourceOptions"
+            android:entryValues="@array/audioSourceValues"
+            android:key="PreferenceAudioSource"
+            android:summary="@string/preference_audioSourceSummary"
+            android:title="@string/preference_audioSourceTitle" />
+        <ListPreference
+            android:defaultValue="2"
+            android:dialogTitle="@string/preference_outputFormatTitle"
+            android:entries="@array/audioFormatOptions"
+            android:entryValues="@array/audioFormatValues"
+            android:key="PreferenceAudioFormat"
+            android:summary="@string/preference_outputFormatSummary"
+            android:title="@string/preference_outputFormatTitle" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
