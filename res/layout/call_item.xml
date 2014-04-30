@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp" >
+
+    <ImageView
+        android:id="@+id/contact_imageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:padding="5dp"
+        android:src="@android:drawable/sym_def_app_icon" />
+
+    <TextView
+        android:id="@+id/phoneNumber_textView"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/contact_imageView"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/contact_imageView"
+        android:maxLines="1"
+        android:text="Medium Text......." />
+
+    <ImageView
+        android:id="@+id/phone_imageView"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignLeft="@+id/phoneNumber_textView"
+        android:layout_below="@+id/phoneNumber_textView"
+        android:src="@android:drawable/sym_call_outgoing" />
+
+    <TextView
+        android:id="@+id/callDetails_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/phone_imageView"
+        android:layout_below="@+id/phoneNumber_textView"
+        android:layout_marginLeft="5dp"
+        android:maxLines="2"
+        android:text="Description" />
+
+    <ImageButton
+        android:id="@+id/play_imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="#00FFFFFF"
+        android:focusable="false"
+        android:src="@android:drawable/ic_media_play" />
+
+</RelativeLayout>

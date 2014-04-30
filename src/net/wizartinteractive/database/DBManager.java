@@ -22,9 +22,21 @@ public class DBManager
 	private static DBContext databaseContext = null;
 
 	private static SQLiteDatabase database = null;
+	
+	private static DBManager dbManager = null;
 
 	public DBManager()
 	{
+	}
+	
+	public static DBManager getInstance()
+	{
+		if(dbManager == null)
+		{
+			dbManager = new DBManager();
+		}
+		
+		return dbManager;
 	}
 
 	public boolean initializeDB(Context _context)
@@ -76,6 +88,8 @@ public class DBManager
 	{
 		Call call = null;
 
+		this.openWritableDB();
+		
 		String[] columns = new String[] { "Id", "IncomingNumber", "Date", "Duration", "Type", "FilePath" };
 
 		Cursor cursor = database.query(this.CALLS_TABLE, columns, String.format("Id = %s", id), null, null, null, null);
@@ -91,13 +105,17 @@ public class DBManager
 			call.setType(CallType.values()[cursor.getInt(4)]);
 			call.setFilePath(cursor.getString(5));
 		}
+		
+		this.closeDatabase();
 
 		return call;
 	}
 
-	public List<Call> getCalls()
+	public ArrayList<Call> getCalls()
 	{
-		List<Call> calls = new ArrayList<Call>();
+		ArrayList<Call> calls = new ArrayList<Call>();
+		
+		this.openWritableDB();
 
 		String[] columns = new String[] { "Id" };
 
@@ -115,12 +133,16 @@ public class DBManager
 				}
 			}
 		}
+		
+		this.closeDatabase();
 
 		return calls;
 	}
 
 	public boolean addCall(Call call)
 	{
+		this.openWritableDB();
+		
 		ContentValues values = new ContentValues();
 
 		// values.put("Id", call.getId());
@@ -129,15 +151,17 @@ public class DBManager
 		values.put("Duration", call.getDuration());
 		values.put("Type", call.getType().getType());
 		values.put("FilePath", call.getFilePath());
-
+		
 		long id = this.database.insert(this.CALLS_TABLE, null, values);
 
 		if (id != -1)
 		{
+			this.closeDatabase();
 			return true;
 		}
 		else
 		{
+			this.closeDatabase();
 			Utilities.logErrorMessage(LOG_TAG, "Error inserting Call object into DB", null);
 			return false;
 		}
@@ -145,7 +169,11 @@ public class DBManager
 
 	public boolean deleteCall(long id)
 	{
+		this.openWritableDB();
+		
 		int affectedRows = this.database.delete(CALLS_TABLE, String.format("Id=%s", id), null);
+		
+		this.closeDatabase();
 
 		if (affectedRows != 0)
 		{

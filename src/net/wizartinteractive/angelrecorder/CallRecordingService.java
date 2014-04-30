@@ -5,7 +5,13 @@ package net.wizartinteractive.angelrecorder;
 //
 //}
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import net.wizartinteractive.common.Utilities;
+import net.wizartinteractive.database.DBManager;
+import net.wizartinteractive.dbmodels.Call;
+import net.wizartinteractive.dbmodels.CallType;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -21,6 +27,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.text.format.DateFormat;
 
 public class CallRecordingService extends Service implements Runnable
 {
@@ -36,6 +43,11 @@ public class CallRecordingService extends Service implements Runnable
 	public static final int NOTIFICATION_ID_RECEIVED = 0x1221;
 
 	private static ConfigurationManager configurationManager = null;
+
+	private DBManager dbManager = DBManager.getInstance();
+
+	private static Date recordingStart = null;
+	private static Date recordingEnd = null;
 
 	private final BroadcastReceiver callStateReceiver = new BroadcastReceiver()
 	{
@@ -63,7 +75,7 @@ public class CallRecordingService extends Service implements Runnable
 		class MyPhoneListener extends PhoneStateListener
 		{
 			private Context appContext;
-			
+
 			MyPhoneListener(Context context)
 			{
 				super();
@@ -123,7 +135,6 @@ public class CallRecordingService extends Service implements Runnable
 	@Override
 	public IBinder onBind(Intent arg0)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -147,7 +158,7 @@ public class CallRecordingService extends Service implements Runnable
 				mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
 				mediaRecorder.setMaxDuration(0);
 
-				mediaRecorder.setOutputFile(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + phoneNumber + ".3gp");
+				mediaRecorder.setOutputFile(this.getFilename(phoneNumber));
 
 				try
 				{
@@ -155,17 +166,24 @@ public class CallRecordingService extends Service implements Runnable
 				}
 				catch (Exception e)
 				{
+					Utilities.logErrorMessage(LOG_TAG, "Error preparing recorder.", e);
 					e.printStackTrace();
+					mediaRecorder = null;
 				}
 
 				try
 				{
 					mediaRecorder.start();
 					isRecording = true;
+
+					this.recordingStart = new Date();
 				}
 				catch (Exception e)
 				{
+					Utilities.logErrorMessage(LOG_TAG, "Error starting recorder", e);
 					e.printStackTrace();
+					mediaRecorder = null;
+					isRecording = false;
 				}
 			}
 		}
@@ -173,11 +191,37 @@ public class CallRecordingService extends Service implements Runnable
 
 	void stopRecording()
 	{
-		Utilities.logDebugMessage(LOG_TAG, "recording stopped");
+		Utilities.logDebugMessage(LOG_TAG, String.format("Recording stopped call duration: %s seconds", (new Date().getTime() - this.recordingStart.getTime())));
 
-		mediaRecorder.stop();
-		mediaRecorder.reset();
-		mediaRecorder.release();
-		isRecording = false;
+		if (isRecording)
+		{
+			this.recordingEnd = new Date();
+			
+			// this.dbManager.openWritableDB();
+
+			Call call = new Call();
+			call.setDate(this.recordingStart);
+			call.setDuration(this.recordingEnd.getTime() - this.recordingStart.getTime());
+			call.setFilePath(this.getFilename(phoneNumber));
+			call.setIncomingNumber(this.configurationManager.getPhoneNumber());
+			call.setType(CallType.INCOMING);
+
+			this.dbManager.addCall(call);
+
+			mediaRecorder.stop();
+			mediaRecorder.reset();
+			mediaRecorder.release();
+			isRecording = false;
+			
+			// this.dbManager.closeDatabase();
+		}
+
+		mediaRecorder = null;
+	}
+
+	private String getFilename(String number)
+	{
+		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd-hh.mm.ss");
+		return String.format("%s%s %s", this.configurationManager.getAppFolderStorage(), DateFormat.format("yyyy.MM.dd-hh.mm.ss", new Date()), number);
 	}
 }

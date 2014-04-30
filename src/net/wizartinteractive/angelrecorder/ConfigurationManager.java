@@ -70,7 +70,7 @@ public class ConfigurationManager
 
 	public String getAppFolderStorage()
 	{
-		return String.format("%s/AngelRecorder/", Environment.getExternalStorageDirectory());
+		return String.format("%s/AngelRecorder/", Environment.getExternalStorageDirectory().getAbsolutePath());
 	}
 
 	public long getAvailableLocalStorageSpace()

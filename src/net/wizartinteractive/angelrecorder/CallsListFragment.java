@@ -1,6 +1,6 @@
 package net.wizartinteractive.angelrecorder;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import net.wizartinteractive.database.DBManager;
 import net.wizartinteractive.dbmodels.Call;
@@ -19,7 +19,7 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 
 	private DBManager dbManager = null;
 
-	private List<Call> calls = null;
+	private ArrayList<Call> calls = null;
 
 	private Context appContext = null;
 
@@ -33,8 +33,16 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 	{
 		super.onCreate(savedInstanceState);
 
-		this.dbManager = new DBManager();
+		if (this.appContext == null)
+		{
+			this.appContext = this.getActivity();
+		}
+
+		this.dbManager = DBManager.getInstance();
 		this.dbManager.initializeDB(this.appContext);
+
+		// this.dbManager = new DBManager();
+		// this.dbManager.initializeDB(this.appContext);
 
 		// for (int i = 0; i <= 10; i++)
 		// {
@@ -58,7 +66,12 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 
 		View contentView = inflater.inflate(R.layout.fragment_calls_list, container, false);
 
+		this.updateCalls();
+
 		ListView callsList = (ListView) contentView.findViewById(R.id.calls_listView);
+
+		callsList.setAdapter(new CallsListAdapter(getActivity(), R.layout.call_item, this.calls));
+		// callsList.setOnItemClickListener(CallsListFragment.this);
 
 		return contentView;
 	}
@@ -101,10 +114,8 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 
 	public void updateCalls()
 	{
-		this.dbManager.openWritableDB();
-
+		// this.dbManager.openWritableDB();
 		this.calls = dbManager.getCalls();
-
-		dbManager.closeDatabase();
+		// dbManager.closeDatabase();
 	}
 }
