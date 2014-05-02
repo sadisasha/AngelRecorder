@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class CallsListFragment extends android.support.v4.app.Fragment
 {
@@ -22,6 +23,9 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 	private ArrayList<Call> calls = null;
 
 	private Context appContext = null;
+
+	private View contentView = null;
+	private ListView callsListView = null;
 
 	public CallsListFragment()
 	{
@@ -38,25 +42,11 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 			this.appContext = this.getActivity();
 		}
 
-		this.dbManager = DBManager.getInstance();
-		this.dbManager.initializeDB(this.appContext);
-
-		// this.dbManager = new DBManager();
-		// this.dbManager.initializeDB(this.appContext);
-
-		// for (int i = 0; i <= 10; i++)
-		// {
-		// Call call = new Call();
-		//
-		// // call.setId();
-		// call.setIncomingNumber("123456789");
-		// call.setDate(new Date());
-		// call.setDuration(111111);
-		// call.setType(CallType.INCOMING);
-		// call.setFilePath("file:\\" + i);
-		//
-		// dbManager.addCall(call);
-		// }
+		if (this.dbManager == null)
+		{
+			DBManager.initializeDB(this.appContext);
+			this.dbManager = DBManager.getInstance();
+		}
 	}
 
 	@Override
@@ -64,14 +54,14 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 	{
 		super.onCreate(savedInstanceState);
 
-		View contentView = inflater.inflate(R.layout.fragment_calls_list, container, false);
+		this.contentView = inflater.inflate(R.layout.fragment_calls_list, container, false);
 
-		this.updateCalls();
-
-		ListView callsList = (ListView) contentView.findViewById(R.id.calls_listView);
-
-		callsList.setAdapter(new CallsListAdapter(getActivity(), R.layout.call_item, this.calls));
+		// this.updateCalls();
+		// this.callsListView = (ListView) contentView.findViewById(R.id.calls_listView);
+		// callsListView.setAdapter(new CallsListAdapter(getActivity(), R.layout.call_item, this.calls));
 		// callsList.setOnItemClickListener(CallsListFragment.this);
+
+		this.refreshCallsList(this.contentView);
 
 		return contentView;
 	}
@@ -112,10 +102,26 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 		super.onDestroyView();
 	}
 
+	public void refreshCallsList(View contentView)
+	{
+		this.updateCalls();
+
+		TextView noRecordsMessage = (TextView) contentView.findViewById(R.id.noData_textView);
+
+		if (this.calls.size() <= 0)
+		{
+			noRecordsMessage.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			noRecordsMessage.setVisibility(View.GONE);
+			this.callsListView = (ListView) contentView.findViewById(R.id.calls_listView);
+			callsListView.setAdapter(new CallsListAdapter(getActivity(), R.layout.call_item, this.calls));
+		}
+	}
+
 	public void updateCalls()
 	{
-		// this.dbManager.openWritableDB();
-		this.calls = dbManager.getCalls();
-		// dbManager.closeDatabase();
+		this.calls = this.dbManager.getCalls();
 	}
 }

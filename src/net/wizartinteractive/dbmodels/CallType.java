@@ -2,9 +2,9 @@ package net.wizartinteractive.dbmodels;
 
 public enum CallType
 {
-	INCOMING(1),
+	INCOMING(0),
 
-	OUTGOING(2);
+	OUTGOING(1);
 
 	int value;
 

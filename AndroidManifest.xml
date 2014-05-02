@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.STORAGE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -34,13 +35,12 @@
         </activity>
 
         <service android:name=".CallRecordingService" />
-        
-        <receiver android:name=".OutgoingCall">
-            <intent-filter android:priority="1">
+
+        <receiver android:name=".OutgoingCall" >
+            <intent-filter android:priority="1" >
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".IncomingCall" >
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />

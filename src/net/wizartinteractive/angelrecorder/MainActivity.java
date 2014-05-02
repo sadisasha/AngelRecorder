@@ -21,12 +21,12 @@ public class MainActivity extends ActionBarActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		try
 		{
 			ViewConfiguration config = ViewConfiguration.get(this);
 			Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
-			
+
 			if (menuKeyField != null)
 			{
 				menuKeyField.setAccessible(true);
@@ -52,15 +52,15 @@ public class MainActivity extends ActionBarActivity
 		inflater.inflate(R.menu.main, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch (item.getItemId())
 		{
-		case R.id.action_search:
-
-			break;
+		// case R.id.action_search:
+		//
+		// break;
 
 		case R.id.action_settings:
 
@@ -129,7 +129,7 @@ public class MainActivity extends ActionBarActivity
 	private void setMainFragmentContent(Fragment fragment)
 	{
 		this.initializeFragmentManager();
-		// fragmentManager.beginTransaction().replace(R.id.main_content_frame, callsListFragment).addToBackStack(PreferencesFragment.FRAGMENT_NAME).commit();
-		fragmentManager.beginTransaction().add(R.id.main_content_frame, fragment).addToBackStack(CallsListFragment.FRAGMENT_NAME).commit();
+		fragmentManager.beginTransaction().replace(R.id.main_content_frame, fragment).commit();
+		// fragmentManager.beginTransaction().add(R.id.main_content_frame, fragment).addToBackStack(CallsListFragment.FRAGMENT_NAME).commit();
 	}
 }

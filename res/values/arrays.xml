@@ -2,22 +2,26 @@
 <resources>
 
     <string-array name="audioSourceOptions">
+        <item>@string/preference_audioSource_DEFAULT</item>
         <item>@string/preference_audioSource_MIC</item>
         <item>@string/preference_audioSource_VOICECALL</item>
         <item>@string/preference_audioSource_UPLINK</item>
         <item>@string/preference_audioSource_DOWNLINK</item>
     </string-array>
     <string-array name="audioSourceValues">
+        <item>0</item>
         <item>1</item>
         <item>4</item>
         <item>2</item>
         <item>3</item>
     </string-array>
     <string-array name="audioFormatOptions">
+        <item>@string/preference_outputFormat_DEFAULT</item>
         <item>@string/preference_outputFormat_MPEG_4</item>
         <item>@string/preference_outputFormat_THREE_GPP</item>
     </string-array>
     <string-array name="audioFormatValues">
+        <item>0</item>
         <item>2</item>
         <item>1</item>
     </string-array>

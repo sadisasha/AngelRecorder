@@ -864,10 +864,11 @@ containing a value of this type.
         public static final int abc_split_action_bar_is_narrow=0x7f070002;
     }
     public static final class color {
-        public static final int abc_search_url_text_holo=0x7f080003;
+        public static final int abc_search_url_text_holo=0x7f080004;
         public static final int abc_search_url_text_normal=0x7f080000;
         public static final int abc_search_url_text_pressed=0x7f080002;
         public static final int abc_search_url_text_selected=0x7f080001;
+        public static final int apptheme_color=0x7f080003;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -1078,10 +1079,37 @@ containing a value of this type.
         public static final int abc_textfield_searchview_holo_light=0x7f020054;
         public static final int abc_textfield_searchview_right_holo_dark=0x7f020055;
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
-        public static final int ic_launcher=0x7f020057;
+        public static final int apptheme_activated_background_holo_light=0x7f020057;
+        public static final int apptheme_btn_check_holo_light=0x7f020058;
+        public static final int apptheme_btn_check_off_disabled_focused_holo_light=0x7f020059;
+        public static final int apptheme_btn_check_off_disabled_holo_light=0x7f02005a;
+        public static final int apptheme_btn_check_off_focused_holo_light=0x7f02005b;
+        public static final int apptheme_btn_check_off_holo_light=0x7f02005c;
+        public static final int apptheme_btn_check_off_pressed_holo_light=0x7f02005d;
+        public static final int apptheme_btn_check_on_disabled_focused_holo_light=0x7f02005e;
+        public static final int apptheme_btn_check_on_disabled_holo_light=0x7f02005f;
+        public static final int apptheme_btn_check_on_focused_holo_light=0x7f020060;
+        public static final int apptheme_btn_check_on_holo_light=0x7f020061;
+        public static final int apptheme_btn_check_on_pressed_holo_light=0x7f020062;
+        public static final int apptheme_item_background_holo_light=0x7f020063;
+        public static final int apptheme_list_activated_holo=0x7f020064;
+        public static final int apptheme_list_focused_holo=0x7f020065;
+        public static final int apptheme_list_longpressed_holo=0x7f020066;
+        public static final int apptheme_list_pressed_holo_light=0x7f020067;
+        public static final int apptheme_list_selector_background_transition_holo_light=0x7f020068;
+        public static final int apptheme_list_selector_disabled_holo_light=0x7f020069;
+        public static final int apptheme_list_selector_holo_light=0x7f02006a;
+        public static final int call_item_background=0x7f02006b;
+        public static final int call_list_background=0x7f02006c;
+        public static final int control_pause=0x7f02006d;
+        public static final int controls_pause=0x7f02006e;
+        public static final int controls_play=0x7f02006f;
+        public static final int controls_play_stop_button=0x7f020070;
+        public static final int ic_default_contact_photo=0x7f020071;
+        public static final int ic_launcher=0x7f020072;
     }
     public static final class id {
-        public static final int action_about=0x7f060045;
+        public static final int action_about=0x7f060046;
         public static final int action_bar=0x7f06001c;
         public static final int action_bar_activity_content=0x7f060015;
         public static final int action_bar_container=0x7f06001b;
@@ -1093,16 +1121,16 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
-        public static final int action_search=0x7f060043;
-        public static final int action_settings=0x7f060044;
+        public static final int action_settings=0x7f060045;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int beginning=0x7f060011;
         public static final int callDetails_textView=0x7f060040;
-        public static final int calls_listView=0x7f060042;
+        public static final int calls_listView=0x7f060044;
         public static final int checkbox=0x7f06002d;
         public static final int collapseActionView=0x7f06000d;
-        public static final int contact_imageView=0x7f06003d;
+        public static final int contact_imageView=0x7f06003e;
+        public static final int date_textView=0x7f060042;
         public static final int default_activity_button=0x7f060028;
         public static final int dialog=0x7f06000e;
         public static final int disableHome=0x7f060008;
@@ -1121,9 +1149,10 @@ containing a value of this type.
         public static final int main_content_frame=0x7f06003c;
         public static final int middle=0x7f060012;
         public static final int never=0x7f060009;
+        public static final int noData_textView=0x7f060043;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
-        public static final int phoneNumber_textView=0x7f06003e;
+        public static final int phoneNumber_textView=0x7f06003d;
         public static final int phone_imageView=0x7f06003f;
         public static final int play_imageButton=0x7f060041;
         public static final int progress_circular=0x7f060018;
@@ -1259,28 +1288,38 @@ containing a value of this type.
         /**  menus 
          */
         public static final int app_name=0x7f0b000d;
+        public static final int mediaPlayingFileError=0x7f0b002b;
+        public static final int messageNoData=0x7f0b0028;
+        /**  info messages 
+         */
+        public static final int messageRecordingStarted=0x7f0b0026;
+        public static final int messageRecordingStopped=0x7f0b0027;
         /**  error messages 
          */
-        public static final int phoneCompatibilityError=0x7f0b0022;
-        public static final int phoneRecordgingError=0x7f0b0023;
+        public static final int phoneCompatibilityError=0x7f0b0029;
+        public static final int phoneRecordgingError=0x7f0b002a;
+        public static final int preference_areNotificationsEnabledSummary=0x7f0b0017;
+        public static final int preference_areNotificationsEnabledTitle=0x7f0b0016;
         /**  audioSource preferences 
          */
-        public static final int preference_audioCategoryTitle=0x7f0b0016;
-        public static final int preference_audioSourceSummary=0x7f0b0018;
-        public static final int preference_audioSourceTitle=0x7f0b0017;
-        public static final int preference_audioSource_DOWNLINK=0x7f0b001c;
-        public static final int preference_audioSource_MIC=0x7f0b0019;
-        public static final int preference_audioSource_UPLINK=0x7f0b001b;
-        public static final int preference_audioSource_VOICECALL=0x7f0b001a;
+        public static final int preference_audioCategoryTitle=0x7f0b0018;
+        public static final int preference_audioSourceSummary=0x7f0b001a;
+        public static final int preference_audioSourceTitle=0x7f0b0019;
+        public static final int preference_audioSource_DEFAULT=0x7f0b001b;
+        public static final int preference_audioSource_DOWNLINK=0x7f0b001f;
+        public static final int preference_audioSource_MIC=0x7f0b001c;
+        public static final int preference_audioSource_UPLINK=0x7f0b001e;
+        public static final int preference_audioSource_VOICECALL=0x7f0b001d;
         public static final int preference_isServiceEnabledSummary=0x7f0b0015;
         public static final int preference_isServiceEnabledTitle=0x7f0b0014;
-        public static final int preference_outputFormatSummary=0x7f0b001e;
+        public static final int preference_outputFormatSummary=0x7f0b0021;
         /**  audioFormat preferences 
          */
-        public static final int preference_outputFormatTitle=0x7f0b001d;
-        public static final int preference_outputFormat_AAC=0x7f0b0020;
-        public static final int preference_outputFormat_MPEG_4=0x7f0b0021;
-        public static final int preference_outputFormat_THREE_GPP=0x7f0b001f;
+        public static final int preference_outputFormatTitle=0x7f0b0020;
+        public static final int preference_outputFormat_AAC=0x7f0b0024;
+        public static final int preference_outputFormat_DEFAULT=0x7f0b0022;
+        public static final int preference_outputFormat_MPEG_4=0x7f0b0025;
+        public static final int preference_outputFormat_THREE_GPP=0x7f0b0023;
         /**  service preferences 
          */
         public static final int preference_serviceCategoryTitle=0x7f0b0013;
@@ -1289,18 +1328,25 @@ containing a value of this type.
         /** 
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+
+
     
 
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
+
+
         
          */
         public static final int AppBaseTheme=0x7f0c008b;
         /**  Application theme. 
- All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f0c008c;
+        public static final int CheckBoxAppTheme=0x7f0c008d;
+        public static final int ListViewAppTheme=0x7f0c008e;
+        public static final int ListViewAppTheme_White=0x7f0c008f;
+        public static final int SpinnerItemAppTheme=0x7f0c0090;
         /**  Mimic text appearance in select_dialog_item.xml 
          */
         public static final int TextAppearance_AppCompat_Base_CompactMenu_Dialog=0x7f0c0063;
@@ -1503,6 +1549,7 @@ containing a value of this type.
         public static final int Widget_AppCompat_ProgressBar=0x7f0c000a;
         public static final int Widget_AppCompat_ProgressBar_Horizontal=0x7f0c0009;
         public static final int Widget_AppCompat_Spinner_DropDown_ActionBar=0x7f0c0022;
+        public static final int _AppTheme=0x7f0c0091;
     }
     public static final class xml {
         public static final int preferences=0x7f050000;

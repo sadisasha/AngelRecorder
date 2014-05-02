@@ -15,7 +15,7 @@ public class DBContext extends SQLiteOpenHelper
 
 	private static final int DATABASE_VERSION = 1;
 
-	private static final String CALLS_TABLE = "CALLS";
+	private static final String CALLS_TABLE = "Calls";
 
 	private static final String[] DATABASE_TABLES = { CALLS_TABLE };
 

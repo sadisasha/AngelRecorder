@@ -1,7 +1,7 @@
 package net.wizartinteractive.database;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.wizartinteractive.common.Utilities;
 import net.wizartinteractive.dbmodels.Call;
@@ -17,34 +17,30 @@ public class DBManager
 
 	private static final String CALLS_TABLE = "CALLS";
 
-	private Context appContext = null;
+	// private static Context appContext = null;
 
-	private static DBContext databaseContext = null;
-
-	private static SQLiteDatabase database = null;
-	
 	private static DBManager dbManager = null;
+	private static DBContext databaseContext = null;
+	private static SQLiteDatabase database = null;
 
-	public DBManager()
+	private AtomicInteger openCounter = new AtomicInteger();
+
+	public synchronized static DBManager getInstance()
 	{
-	}
-	
-	public static DBManager getInstance()
-	{
-		if(dbManager == null)
+		if (dbManager == null)
 		{
-			dbManager = new DBManager();
+			throw new IllegalStateException(String.format("%s is not initialized, call initializeDB(..) method first.", DBManager.class.getSimpleName()));
 		}
-		
+
 		return dbManager;
 	}
 
-	public boolean initializeDB(Context _context)
+	public static synchronized boolean initializeDB(Context context)
 	{
 		try
 		{
-			this.appContext = _context;
-			this.databaseContext = new DBContext(this.appContext);
+			dbManager = new DBManager();
+			databaseContext = new DBContext(context);
 
 			return true;
 		}
@@ -55,44 +51,51 @@ public class DBManager
 		}
 	}
 
-	public boolean openWritableDB()
+	public synchronized SQLiteDatabase getWritableDB()
 	{
+
 		try
 		{
-			if (this.database == null)
+			if (openCounter.incrementAndGet() == 1)
 			{
+				Utilities.logDebugMessage(LOG_TAG, "Opening DB...");
 				this.database = this.databaseContext.getWritableDatabase();
 			}
 
-			return true;
+			return this.database;
 		}
 		catch (Exception ex)
 		{
 			Utilities.logErrorMessage(LOG_TAG, "Error opening DB in W mode ", ex);
-			return false;
+			return null;
 		}
 	}
 
-	public boolean closeDatabase()
+	public synchronized boolean closeDatabase()
 	{
-		if (this.database.isOpen())
+
+		if (this.openCounter.decrementAndGet() == 0)
 		{
+			Utilities.logDebugMessage(LOG_TAG, "Closing DB...");
 			this.database.close();
-			return true;
 		}
+		// if (this.database != null && this.database.isOpen())
+		// {
+		// this.database.close();
+		// return true;
+		// }
 
 		return false;
 	}
 
-	public Call getCall(long id)
+	public synchronized Call getCall(long id)
 	{
 		Call call = null;
 
-		this.openWritableDB();
-		
 		String[] columns = new String[] { "Id", "IncomingNumber", "Date", "Duration", "Type", "FilePath" };
 
-		Cursor cursor = database.query(this.CALLS_TABLE, columns, String.format("Id = %s", id), null, null, null, null);
+		// Cursor cursor = database.query(this.CALLS_TABLE, columns, String.format("Id = %s", id), null, null, null, null);
+		Cursor cursor = this.getInstance().getWritableDB().query(this.CALLS_TABLE, columns, String.format("Id = %s", id), null, null, null, null);
 
 		if (cursor.moveToFirst())
 		{
@@ -105,25 +108,26 @@ public class DBManager
 			call.setType(CallType.values()[cursor.getInt(4)]);
 			call.setFilePath(cursor.getString(5));
 		}
-		
-		this.closeDatabase();
+
+		this.getInstance().closeDatabase();
 
 		return call;
 	}
 
-	public ArrayList<Call> getCalls()
+	public synchronized ArrayList<Call> getCalls()
 	{
 		ArrayList<Call> calls = new ArrayList<Call>();
-		
-		this.openWritableDB();
 
 		String[] columns = new String[] { "Id" };
 
-		Cursor cursor = this.database.query(this.CALLS_TABLE, columns, null, null, null, null, null);
+		// Cursor cursor = this.database.query(this.CALLS_TABLE, columns, null, null, null, null, null);
+
+		Cursor cursor = this.getInstance().getWritableDB().query(this.CALLS_TABLE, columns, null, null, null, null, "Id DESC");
 
 		if (cursor.moveToFirst())
 		{
-			while (cursor.moveToNext())
+
+			do
 			{
 				Call call = this.getCall(cursor.getLong(0));
 
@@ -132,17 +136,18 @@ public class DBManager
 					calls.add(call);
 				}
 			}
+			while (cursor.moveToNext());
 		}
-		
-		this.closeDatabase();
+
+		Utilities.logDebugMessage(this.LOG_TAG, String.format("Calls in DB: %s", calls.size()));
+
+		this.getInstance().closeDatabase();
 
 		return calls;
 	}
 
-	public boolean addCall(Call call)
+	public synchronized boolean addCall(Call call)
 	{
-		this.openWritableDB();
-		
 		ContentValues values = new ContentValues();
 
 		// values.put("Id", call.getId());
@@ -151,29 +156,33 @@ public class DBManager
 		values.put("Duration", call.getDuration());
 		values.put("Type", call.getType().getType());
 		values.put("FilePath", call.getFilePath());
-		
-		long id = this.database.insert(this.CALLS_TABLE, null, values);
+
+		// long id = this.database.insert(this.CALLS_TABLE, null, values);
+
+		Utilities.logDebugMessage(LOG_TAG, "Inserting Call Object into DB");
+		long id = this.getInstance().getWritableDB().insert(this.CALLS_TABLE, null, values);
 
 		if (id != -1)
 		{
-			this.closeDatabase();
+			Utilities.logDebugMessage(LOG_TAG, "Call Object sucesfully inserted!!!");
+			this.getInstance().closeDatabase();
 			return true;
 		}
 		else
 		{
-			this.closeDatabase();
+			this.getInstance().closeDatabase();
 			Utilities.logErrorMessage(LOG_TAG, "Error inserting Call object into DB", null);
 			return false;
 		}
 	}
 
-	public boolean deleteCall(long id)
+	public synchronized boolean deleteCall(long id)
 	{
-		this.openWritableDB();
-		
-		int affectedRows = this.database.delete(CALLS_TABLE, String.format("Id=%s", id), null);
-		
-		this.closeDatabase();
+		// int affectedRows = this.database.delete(CALLS_TABLE, String.format("Id=%s", id), null);
+
+		int affectedRows = this.getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", id), null);
+
+		this.getInstance().closeDatabase();
 
 		if (affectedRows != 0)
 		{

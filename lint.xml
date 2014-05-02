@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
     <issue id="NewApi">
+        <ignore path="src/net/wizartinteractive/angelrecorder/CallRecordingService.java" />
         <ignore path="src/net/wizartinteractive/angelrecorder/CallsListFragment.java" />
         <ignore path="src/net/wizartinteractive/angelrecorder/ConfigurationManager.java" />
         <ignore path="src/net/wizartinteractive/angelrecorder/MainActivity.java" />

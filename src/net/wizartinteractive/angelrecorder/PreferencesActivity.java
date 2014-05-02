@@ -10,6 +10,7 @@ public class PreferencesActivity extends PreferenceActivity
 	public static final String AUDIO_SOURCE_KEY = "PreferenceAudioSource";
 	public static final String AUDIO_FORMAT_KEY = "PreferenceAudioFormat";
 	public static final String SERVICE_ENABLED_KEY = "PreferenceIsServiceEnabled";
+	public static final String NOTIFICATIONS_ENABLED_KEY = "PreferenceAreNotificationsEnabled";
 	public static final String PHONE_NUMBER_KEY = "PhoneNumber";
 	public static final String CALL_STATE_KEY = "CallState";
 

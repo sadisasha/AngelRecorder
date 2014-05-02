@@ -20,12 +20,12 @@ public class OutgoingCall extends BroadcastReceiver
 
 		if (this.configurationManager == null)
 		{
+			ConfigurationManager.Init(context);
 			this.configurationManager = ConfigurationManager.getInstance();
-			this.configurationManager.Init(context);
 		}
 
-		String phoneNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-		this.configurationManager.setOutgoingPhoneNumber(phoneNumber);
+		String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+		this.configurationManager.setPhoneNumber(phoneNumber);
 	}
 
 }

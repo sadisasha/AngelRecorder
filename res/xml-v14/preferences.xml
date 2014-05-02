@@ -9,6 +9,11 @@
             android:key="PreferenceIsServiceEnabled"
             android:summary="@string/preference_isServiceEnabledSummary"
             android:title="@string/preference_isServiceEnabledTitle" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="PreferenceAreNotificationsEnabled"
+            android:summary="@string/preference_areNotificationsEnabledSummary"
+            android:title="@string/preference_areNotificationsEnabledTitle" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="PREFERENCE_AUDIO"

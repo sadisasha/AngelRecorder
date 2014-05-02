@@ -13,11 +13,14 @@
     <string name="preference_serviceCategoryTitle">Service Settings</string>
     <string name="preference_isServiceEnabledTitle">Enable</string>
     <string name="preference_isServiceEnabledSummary">Enable the service to record all incomming and outgoing calls</string>
+    <string name="preference_areNotificationsEnabledTitle">Notifications</string>
+    <string name="preference_areNotificationsEnabledSummary">Show notifications of recording events</string>
 
     <!-- audioSource preferences -->
     <string name="preference_audioCategoryTitle">Audio Settings</string>
     <string name="preference_audioSourceTitle">Audio Source</string>
     <string name="preference_audioSourceSummary">Select the audio source to record from during calls</string>
+    <string name="preference_audioSource_DEFAULT">Default</string>
     <string name="preference_audioSource_MIC">Microphone</string>
     <string name="preference_audioSource_VOICECALL">Booth sides</string>
     <string name="preference_audioSource_UPLINK">My side only</string>
@@ -26,12 +29,19 @@
     <!-- audioFormat preferences -->
     <string name="preference_outputFormatTitle">Output Format</string>
     <string name="preference_outputFormatSummary">Select the file format to use for call recordings</string>
+    <string name="preference_outputFormat_DEFAULT">DEFAULT</string>
     <string name="preference_outputFormat_THREE_GPP">3GPP/3GP</string>
     <string name="preference_outputFormat_AAC">AAC/M4A</string>
     <string name="preference_outputFormat_MPEG_4">MPEG4/MP4</string>
 
+    <!-- info messages -->
+    <string name="messageRecordingStarted">Current call is being recorded.</string>
+    <string name="messageRecordingStopped">Call has been recorded.</string>
+    <string name="messageNoData">No recorded calls.</string>
+
     <!-- error messages -->
-    <string name="phoneCompatibilityError">VOICE CALL is not supported on your phone, call will be recorded only from MIC.</string>
+    <string name="phoneCompatibilityError">Audio Source is not supported on your phone, try record from another Audio Source.</string>
     <string name="phoneRecordgingError">An error occurred, call won\'t be recorded.</string>
+    <string name="mediaPlayingFileError">Error opening audio the file %s.</string>
 
 </resources>

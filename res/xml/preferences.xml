@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
-    >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory
         android:key="PREFERENCE_SERVICE"
@@ -10,6 +9,11 @@
             android:key="PreferenceIsServiceEnabled"
             android:summary="@string/preference_isServiceEnabledSummary"
             android:title="@string/preference_isServiceEnabledTitle" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="PreferenceAreNotificationsEnabled"
+            android:summary="@string/preference_areNotificationsEnabledSummary"
+            android:title="@string/preference_areNotificationsEnabledTitle" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="PREFERENCE_AUDIO"

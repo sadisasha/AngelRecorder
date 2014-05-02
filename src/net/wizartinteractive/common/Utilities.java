@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import net.wizartinteractive.angelrecorder.MainActivity;
 import android.os.Environment;
@@ -16,13 +17,9 @@ import android.util.Log;
 
 public class Utilities extends MainActivity
 {
-	private static final boolean LOG_ENABLED = true;
-
-	private static final String dateFormat = "yyyy-MM-dd hh:mm:ss.sss";
-
 	public static void logErrorMessage(String tag, String message, Exception exception)
 	{
-		if (LOG_ENABLED)
+		if (Constants.LOG_ENABLED)
 		{
 			if (exception != null)
 			{
@@ -39,14 +36,9 @@ public class Utilities extends MainActivity
 		}
 	}
 
-	public void uno()
-	{
-
-	}
-
 	public static void logInfoMessage(String tag, String message)
 	{
-		if (LOG_ENABLED)
+		if (Constants.LOG_ENABLED)
 		{
 			Log.i(tag, message);
 		}
@@ -54,7 +46,7 @@ public class Utilities extends MainActivity
 
 	public static void logDebugMessage(String tag, String message)
 	{
-		if (LOG_ENABLED)
+		if (Constants.LOG_ENABLED)
 		{
 			Log.d(tag, message);
 		}
@@ -81,7 +73,7 @@ public class Utilities extends MainActivity
 	public static Date ConvertStringToDate(String dateString)
 	{
 		Date date = null;
-		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+		SimpleDateFormat format = new SimpleDateFormat(Constants.DATE_FORMAT);
 
 		try
 		{
@@ -97,11 +89,21 @@ public class Utilities extends MainActivity
 
 	public static String ConvertDateToString(Date date)
 	{
-		return String.format("%s", DateFormat.format(dateFormat, date));
+		return String.format("%s", DateFormat.format(Constants.DATE_FORMAT, date));
+	}
+	
+	public static String ConvertDateToShortDateString(Date date)
+	{
+		return String.format("%s", DateFormat.format(Constants.SHORT_DATE_FORMAT, date));
 	}
 
-	public static String ConvertMilisecondsToHMS(long miliseconds)
+	public static String ConvertMilisecondsToHMS(long milliseconds)
 	{
-		return String.format("%s", DateFormat.format("hh:mm:ss", new Date(miliseconds)));
+
+		int seconds = (int) (milliseconds / 1000) % 60;
+		int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
+		int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
+
+		return String.format("%02d:%02d:%02d", hours, minutes, seconds);
 	}
 }

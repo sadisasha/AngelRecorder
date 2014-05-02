@@ -1,30 +1,28 @@
 package net.wizartinteractive.angelrecorder;
 
-//public class CallRecordingService
-//{
-//
-//}
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import net.wizartinteractive.common.Constants;
 import net.wizartinteractive.common.Utilities;
 import net.wizartinteractive.database.DBManager;
 import net.wizartinteractive.dbmodels.Call;
 import net.wizartinteractive.dbmodels.CallType;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.format.DateFormat;
@@ -44,12 +42,12 @@ public class CallRecordingService extends Service implements Runnable
 
 	private static ConfigurationManager configurationManager = null;
 
-	private DBManager dbManager = DBManager.getInstance();
+	private DBManager dbManager = null;
 
 	private static Date recordingStart = null;
 	private static Date recordingEnd = null;
 
-	private final BroadcastReceiver callStateReceiver = new BroadcastReceiver()
+	private final BroadcastReceiver incomingCallReceiver = new BroadcastReceiver()
 	{
 		@Override
 		public void onReceive(Context context, Intent intent)
@@ -67,7 +65,7 @@ public class CallRecordingService extends Service implements Runnable
 				if (state.equals(TelephonyManager.EXTRA_STATE_RINGING))
 				{
 					phoneNumber = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-					configurationManager.setIncomingPhoneNumber(phoneNumber);
+					configurationManager.setPhoneNumber(phoneNumber);
 				}
 			}
 		}
@@ -91,9 +89,6 @@ public class CallRecordingService extends Service implements Runnable
 
 					if (isRecording)
 					{
-						NotificationManager mNotificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
-						Notification not;
-
 						stopRecording();
 					}
 
@@ -111,13 +106,19 @@ public class CallRecordingService extends Service implements Runnable
 
 		if (this.configurationManager == null)
 		{
+			ConfigurationManager.Init(this);
 			this.configurationManager = ConfigurationManager.getInstance();
-			this.configurationManager.Init(this);
+		}
+
+		if (this.dbManager == null)
+		{
+			DBManager.initializeDB(getApplicationContext());
+			this.dbManager = DBManager.getInstance();
 		}
 
 		IntentFilter intentToReceiveFilter = new IntentFilter();
 		intentToReceiveFilter.addAction(INCOMING_CALL_ACTION);
-		this.registerReceiver(callStateReceiver, intentToReceiveFilter, null, handler);
+		this.registerReceiver(incomingCallReceiver, intentToReceiveFilter, null, handler);
 
 		Thread aThread = new Thread(this);
 		aThread.start();
@@ -126,10 +127,9 @@ public class CallRecordingService extends Service implements Runnable
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-		this.phoneNumber = intent.getExtras().getString("phoneNumber");
-		configurationManager.setIncomingPhoneNumber(this.phoneNumber);
+		this.phoneNumber = this.configurationManager.getPhoneNumber();
 
-		return START_STICKY;
+		return START_STICKY_COMPATIBILITY;
 	}
 
 	@Override
@@ -146,16 +146,27 @@ public class CallRecordingService extends Service implements Runnable
 
 		if (this.configurationManager.getServiceEnabled())
 		{
-			Utilities.logDebugMessage(LOG_TAG, String.format("Recording started saving to file: %s", Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + phoneNumber + ".3gp"));
-
 			this.phoneNumber = this.configurationManager.getPhoneNumber();
+
+			Utilities.logDebugMessage(LOG_TAG, String.format("Recording started saving to file: %s", this.getFilename(this.phoneNumber)));
 
 			if (phoneNumber != "")
 			{
 				mediaRecorder = new MediaRecorder();
-				mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-				mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-				mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+				// mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+				// mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+				mediaRecorder.setAudioSource(this.configurationManager.getAudioSource());
+				mediaRecorder.setOutputFormat(this.configurationManager.getAudioFormat());
+
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1)
+				{
+					mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+				}
+				else
+				{
+					mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+				}
+
 				mediaRecorder.setMaxDuration(0);
 
 				mediaRecorder.setOutputFile(this.getFilename(phoneNumber));
@@ -177,6 +188,8 @@ public class CallRecordingService extends Service implements Runnable
 					isRecording = true;
 
 					this.recordingStart = new Date();
+
+					this.showNotification(this.getString(R.string.messageRecordingStarted), true);
 				}
 				catch (Exception e)
 				{
@@ -184,6 +197,8 @@ public class CallRecordingService extends Service implements Runnable
 					e.printStackTrace();
 					mediaRecorder = null;
 					isRecording = false;
+
+					this.showNotification(this.getString(R.string.phoneCompatibilityError), false);
 				}
 			}
 		}
@@ -191,13 +206,11 @@ public class CallRecordingService extends Service implements Runnable
 
 	void stopRecording()
 	{
-		Utilities.logDebugMessage(LOG_TAG, String.format("Recording stopped call duration: %s seconds", (new Date().getTime() - this.recordingStart.getTime())));
+		Utilities.logDebugMessage(LOG_TAG, String.format("Recording stopped call duration: %s seconds", (new Date().getTime() - this.recordingStart.getTime()) / 1000));
 
 		if (isRecording)
 		{
 			this.recordingEnd = new Date();
-			
-			// this.dbManager.openWritableDB();
 
 			Call call = new Call();
 			call.setDate(this.recordingStart);
@@ -213,15 +226,89 @@ public class CallRecordingService extends Service implements Runnable
 			mediaRecorder.release();
 			isRecording = false;
 			
-			// this.dbManager.closeDatabase();
+			this.configurationManager.setPhoneNumber("");
+
+			this.showNotification(this.getString(R.string.messageRecordingStopped), false);
 		}
 
 		mediaRecorder = null;
 	}
 
+	private void showNotification(String message, boolean started)
+	{
+		if (this.configurationManager.getNotificationsEnabled())
+		{
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			{
+				Notification.Builder notificationBuilder = new Notification.Builder(this);
+				notificationBuilder.setSmallIcon(android.R.drawable.sym_def_app_icon);
+				notificationBuilder.setContentTitle(Constants.NOTIFICATION_TITLE);
+				notificationBuilder.setContentText(message);
+				notificationBuilder.setAutoCancel(true);
+
+				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
+				notificationBuilder.setContentIntent(pendingIntent);
+
+				Notification notification = notificationBuilder.build();
+
+				if (started)
+				{
+					notification.flags = Notification.FLAG_ONGOING_EVENT;
+				}
+				else
+				{
+					notification.flags = Notification.FLAG_AUTO_CANCEL;
+				}
+
+				NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+				notificationManager.notify(this.LOG_TAG, 0, notification);
+			}
+			else
+			{
+				NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+				notificationBuilder.setSmallIcon(android.R.drawable.sym_def_app_icon);
+				notificationBuilder.setContentTitle(Constants.NOTIFICATION_TITLE);
+				notificationBuilder.setContentText(message);
+				notificationBuilder.setAutoCancel(true);
+
+				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
+				notificationBuilder.setContentIntent(pendingIntent);
+
+				Notification notification = notificationBuilder.build();
+
+				if (started)
+				{
+					notification.flags = Notification.FLAG_ONGOING_EVENT;
+				}
+				else
+				{
+					notification.flags = Notification.FLAG_AUTO_CANCEL;
+				}
+
+				NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+				notificationManager.notify(this.LOG_TAG, 0, notification);
+			}
+		}
+	}
+
 	private String getFilename(String number)
 	{
+		String fileExtension = "";
+
+		if (this.configurationManager.getAudioFormat() == MediaRecorder.OutputFormat.DEFAULT || this.configurationManager.getAudioFormat() == MediaRecorder.OutputFormat.THREE_GPP)
+		{
+			fileExtension = ".3gp";
+		}
+		else if (this.configurationManager.getAudioFormat() == MediaRecorder.OutputFormat.MPEG_4)
+		{
+			fileExtension = ".mp4";
+		}
+		else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && this.configurationManager.getAudioFormat() == MediaRecorder.OutputFormat.AAC_ADTS)
+		{
+			fileExtension = ".m4a";
+		}
+
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd-hh.mm.ss");
-		return String.format("%s%s %s", this.configurationManager.getAppFolderStorage(), DateFormat.format("yyyy.MM.dd-hh.mm.ss", new Date()), number);
+		return String.format("%s[%s] %s%s", this.configurationManager.getAppFolderStorage(), DateFormat.format("yyyy.MM.dd-hh.mm.ss", new Date()), number, fileExtension);
 	}
 }

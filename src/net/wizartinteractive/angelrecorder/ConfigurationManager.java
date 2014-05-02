@@ -2,6 +2,8 @@ package net.wizartinteractive.angelrecorder;
 
 import java.io.File;
 
+import net.wizartinteractive.database.DBManager;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.MediaRecorder;
@@ -12,32 +14,29 @@ import android.preference.PreferenceManager;
 
 public class ConfigurationManager
 {
-	private static ConfigurationManager instance;
+	private static ConfigurationManager configurationManager;
 
-	private Context context;
+	private static SharedPreferences.Editor editor;
+	private static SharedPreferences preferences;
 
-	private SharedPreferences.Editor editor;
-	private SharedPreferences preferences;
-	
-	private SharedPreferences angelRecorderPreferences;
-
+	private static SharedPreferences angelRecorderPreferences;
 
 	public static ConfigurationManager getInstance()
 	{
-		if (instance == null)
+		if (configurationManager == null)
 		{
-			instance = new ConfigurationManager();
+			throw new IllegalStateException(String.format("%s is not initialized, call initializeDB(..) method first.", ConfigurationManager.class.getSimpleName()));
 		}
 
-		return instance;
+		return configurationManager;
 	}
 
-	public void Init(Context context)
+	public static void Init(Context context)
 	{
-		this.context = context;
-		this.preferences = PreferenceManager.getDefaultSharedPreferences(this.context);
-		this.angelRecorderPreferences = this.context.getSharedPreferences("AngelRecorderPreferences", Context.MODE_PRIVATE);
-		this.editor = this.angelRecorderPreferences.edit();
+		configurationManager = new ConfigurationManager();
+		preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		angelRecorderPreferences = context.getSharedPreferences("AngelRecorderPreferences", Context.MODE_PRIVATE);
+		editor = angelRecorderPreferences.edit();
 
 		File storageFolder = new File(String.format("%s/AngelRecorder", Environment.getExternalStorageDirectory()));
 
@@ -52,6 +51,11 @@ public class ConfigurationManager
 		return this.preferences.getBoolean(PreferencesActivity.SERVICE_ENABLED_KEY, false);
 	}
 
+	public boolean getNotificationsEnabled()
+	{
+		return this.preferences.getBoolean(PreferencesActivity.NOTIFICATIONS_ENABLED_KEY, false);
+	}
+
 	public int getAudioSource()
 	{
 		return Integer.parseInt(this.preferences.getString(PreferencesActivity.AUDIO_SOURCE_KEY, String.format("%s", MediaRecorder.AudioSource.VOICE_CALL)));
@@ -60,7 +64,6 @@ public class ConfigurationManager
 	public int getAudioFormat()
 	{
 		return Integer.parseInt(this.preferences.getString(PreferencesActivity.AUDIO_FORMAT_KEY, String.format("%s", MediaRecorder.OutputFormat.MPEG_4)));
-		// return this.preferences.getInt(PreferencesActivity.AUDIO_FORMAT_KEY, MediaRecorder.OutputFormat.MPEG_4);
 	}
 
 	public String getPhoneNumber()
@@ -83,7 +86,7 @@ public class ConfigurationManager
 		{
 			available = status.getAvailableBytes();
 		}
-		else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2)
+		else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2)
 		{
 			available = new File(this.getAppFolderStorage()).getFreeSpace();
 		}
@@ -98,7 +101,7 @@ public class ConfigurationManager
 		this.editor.commit();
 	}
 
-	public void setIncomingPhoneNumber(String phoneNumber)
+	public void setPhoneNumber(String phoneNumber)
 	{
 		this.editor.putString(PreferencesActivity.PHONE_NUMBER_KEY, phoneNumber);
 		this.editor.putString(PreferencesActivity.CALL_STATE_KEY, "Incoming");

@@ -10,7 +10,7 @@ import android.telephony.TelephonyManager;
 public class IncomingCall extends BroadcastReceiver
 {
 	private static final String LOG_TAG = "Telephone";
-	
+
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
@@ -32,8 +32,8 @@ public class IncomingCall extends BroadcastReceiver
 
 			if (this.configurationManager == null)
 			{
+				ConfigurationManager.Init(context);
 				this.configurationManager = ConfigurationManager.getInstance();
-				this.configurationManager.Init(context);
 			}
 		}
 
@@ -50,17 +50,17 @@ public class IncomingCall extends BroadcastReceiver
 
 				if (incomingNumber != null && incomingNumber != "")
 				{
-					configurationManager.setIncomingPhoneNumber(incomingNumber);
+					configurationManager.setPhoneNumber(incomingNumber);
 				}
 
 				break;
 
 			case TelephonyManager.CALL_STATE_OFFHOOK:
 
-				Utilities.logDebugMessage(LOG_TAG, String.format("Phone call offhook, incoming number %s", this.configurationManager.getPhoneNumber()));
+				Utilities.logDebugMessage(LOG_TAG, String.format("Phone call offhook, number %s", this.configurationManager.getPhoneNumber()));
 
 				Intent recordingServiceIntent = new Intent(this.context, CallRecordingService.class);
-                recordingServiceIntent.putExtra("phoneNumber", this.configurationManager.getPhoneNumber());
+				// recordingServiceIntent.putExtra("phoneNumber", this.configurationManager.getPhoneNumber());
 				context.startService(recordingServiceIntent);
 
 				return;

@@ -2,26 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp" >
-
-    <ImageView
-        android:id="@+id/contact_imageView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:padding="5dp"
-        android:src="@android:drawable/sym_def_app_icon" />
+    android:background="@android:drawable/screen_background_light_transparent"
+    android:padding="1dp" >
 
     <TextView
         android:id="@+id/phoneNumber_textView"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/contact_imageView"
+        android:layout_marginLeft="7dp"
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@+id/contact_imageView"
         android:maxLines="1"
-        android:text="Medium Text......." />
+        android:text="Medium Text......."
+        android:textSize="20sp" />
 
     <ImageView
         android:id="@+id/phone_imageView"
@@ -35,11 +29,12 @@
         android:id="@+id/callDetails_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/phone_imageView"
         android:layout_below="@+id/phoneNumber_textView"
         android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/phone_imageView"
         android:maxLines="2"
-        android:text="Description" />
+        android:text="Description"
+        android:textSize="17sp" />
 
     <ImageButton
         android:id="@+id/play_imageButton"
@@ -47,8 +42,30 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="5dp"
         android:background="#00FFFFFF"
         android:focusable="false"
-        android:src="@android:drawable/ic_media_play" />
+        android:src="@drawable/controls_play_stop_button" />
+
+    <TextView
+        android:id="@+id/date_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="5dp"
+        android:text="Small Text"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/contact_imageView"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/date_textView"
+        android:padding="0dp"
+        android:src="@drawable/ic_default_contact_photo" />
 
 </RelativeLayout>
