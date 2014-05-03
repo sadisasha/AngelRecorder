@@ -3,6 +3,7 @@ package net.wizartinteractive.angelrecorder;
 import java.io.File;
 
 import net.wizartinteractive.database.DBManager;
+import net.wizartinteractive.dbmodels.CallType;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -48,12 +49,12 @@ public class ConfigurationManager
 
 	public boolean getServiceEnabled()
 	{
-		return this.preferences.getBoolean(PreferencesActivity.SERVICE_ENABLED_KEY, false);
+		return this.preferences.getBoolean(PreferencesActivity.SERVICE_ENABLED_KEY, true);
 	}
 
 	public boolean getNotificationsEnabled()
 	{
-		return this.preferences.getBoolean(PreferencesActivity.NOTIFICATIONS_ENABLED_KEY, false);
+		return this.preferences.getBoolean(PreferencesActivity.NOTIFICATIONS_ENABLED_KEY, true);
 	}
 
 	public int getAudioSource()
@@ -73,7 +74,7 @@ public class ConfigurationManager
 
 	public String getAppFolderStorage()
 	{
-		return String.format("%s/AngelRecorder/", Environment.getExternalStorageDirectory().getAbsolutePath());
+		return String.format("%s/AngelRecorder/", Environment.getExternalStorageDirectory());
 	}
 
 	public long getAvailableLocalStorageSpace()
@@ -93,6 +94,11 @@ public class ConfigurationManager
 
 		return available;
 	}
+	
+	public int getCallDirection()
+	{
+		return this.angelRecorderPreferences.getInt(PreferencesActivity.CALL_STATE_KEY, 0);
+	}
 
 	public void setAudioSource(int audioSource)
 	{
@@ -104,15 +110,13 @@ public class ConfigurationManager
 	public void setPhoneNumber(String phoneNumber)
 	{
 		this.editor.putString(PreferencesActivity.PHONE_NUMBER_KEY, phoneNumber);
-		this.editor.putString(PreferencesActivity.CALL_STATE_KEY, "Incoming");
-
+		
 		this.editor.commit();
 	}
 
-	public void setOutgoingPhoneNumber(String phoneNumber)
+	public void setCallDirection(int direction)
 	{
-		this.editor.putString(PreferencesActivity.PHONE_NUMBER_KEY, phoneNumber);
-		this.editor.putString(PreferencesActivity.CALL_STATE_KEY, "Outgoing");
+		this.editor.putInt(PreferencesActivity.CALL_STATE_KEY, direction);
 
 		this.editor.commit();
 	}

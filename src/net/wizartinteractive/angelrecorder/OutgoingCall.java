@@ -1,6 +1,7 @@
 package net.wizartinteractive.angelrecorder;
 
 import net.wizartinteractive.common.Utilities;
+import net.wizartinteractive.dbmodels.CallType;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ public class OutgoingCall extends BroadcastReceiver
 
 		String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
 		this.configurationManager.setPhoneNumber(phoneNumber);
+		configurationManager.setCallDirection(CallType.OUTGOING.getType());
 	}
 
 }

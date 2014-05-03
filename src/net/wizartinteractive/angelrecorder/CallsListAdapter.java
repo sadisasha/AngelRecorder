@@ -2,6 +2,8 @@ package net.wizartinteractive.angelrecorder;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -25,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * the array adapter for the events list
@@ -78,15 +81,23 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 				public void onClick(View v)
 				{
 					Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-					File file = new File(Uri.parse("file://" + tempItemList.getFilePath()).getPath()).getAbsoluteFile();
-
-					viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
-					viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-					appContext.startActivity(Intent.createChooser(viewIntent, null));
-
-					Environment.getExternalStorageDirectory();
-
+					String filePath = tempItemList.getFilePath();
+					
+					File file = new File(filePath);
+					
+					if(file.exists())
+					{
+						viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
+						viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+	
+						appContext.startActivity(Intent.createChooser(viewIntent, null));
+					}
+					else
+					{
+						Toast toast = Toast.makeText(appContext, appContext.getString(R.string.mediaPlayingFileError), Toast.LENGTH_LONG);
+						toast.show();
+					}
+					
 					// try
 					// {
 					// File file = new File(tempItemList.getFilePath());

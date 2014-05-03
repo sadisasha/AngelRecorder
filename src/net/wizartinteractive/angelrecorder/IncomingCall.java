@@ -1,6 +1,7 @@
 package net.wizartinteractive.angelrecorder;
 
 import net.wizartinteractive.common.Utilities;
+import net.wizartinteractive.dbmodels.CallType;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -46,11 +47,12 @@ public class IncomingCall extends BroadcastReceiver
 			{
 			case TelephonyManager.CALL_STATE_RINGING:
 
-				Utilities.logDebugMessage(LOG_TAG, String.format("Phone is ringing, incoming number %s", incomingNumber));
+				Utilities.logDebugMessage(LOG_TAG, String.format("Phone is ringing, number %s", incomingNumber));
 
 				if (incomingNumber != null && incomingNumber != "")
 				{
 					configurationManager.setPhoneNumber(incomingNumber);
+					configurationManager.setCallDirection(CallType.INCOMING.getType());
 				}
 
 				break;

@@ -22,7 +22,7 @@
     <string name="preference_audioSourceSummary">Select the audio source to record from during calls</string>
     <string name="preference_audioSource_DEFAULT">Default</string>
     <string name="preference_audioSource_MIC">Microphone</string>
-    <string name="preference_audioSource_VOICECALL">Booth sides</string>
+    <string name="preference_audioSource_VOICECALL">Both sides</string>
     <string name="preference_audioSource_UPLINK">My side only</string>
     <string name="preference_audioSource_DOWNLINK">Their side only</string>
 
@@ -42,6 +42,6 @@
     <!-- error messages -->
     <string name="phoneCompatibilityError">Audio Source is not supported on your phone, try record from another Audio Source.</string>
     <string name="phoneRecordgingError">An error occurred, call won\'t be recorded.</string>
-    <string name="mediaPlayingFileError">Error opening audio the file %s.</string>
+    <string name="mediaPlayingFileError">Error, file doesn\'t exists.</string>
 
 </resources>

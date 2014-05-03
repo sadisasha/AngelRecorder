@@ -19,6 +19,7 @@ import android.content.IntentFilter;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -169,7 +170,7 @@ public class CallRecordingService extends Service implements Runnable
 
 				mediaRecorder.setMaxDuration(0);
 
-				mediaRecorder.setOutputFile(this.getFilename(phoneNumber));
+				mediaRecorder.setOutputFile(this.configurationManager.getAppFolderStorage() + this.getFilename(phoneNumber));
 
 				try
 				{
@@ -179,26 +180,34 @@ public class CallRecordingService extends Service implements Runnable
 				{
 					Utilities.logErrorMessage(LOG_TAG, "Error preparing recorder.", e);
 					e.printStackTrace();
-					mediaRecorder = null;
-				}
-
-				try
-				{
-					mediaRecorder.start();
-					isRecording = true;
-
-					this.recordingStart = new Date();
-
-					this.showNotification(this.getString(R.string.messageRecordingStarted), true);
-				}
-				catch (Exception e)
-				{
-					Utilities.logErrorMessage(LOG_TAG, "Error starting recorder", e);
-					e.printStackTrace();
-					mediaRecorder = null;
-					isRecording = false;
-
+					
 					this.showNotification(this.getString(R.string.phoneCompatibilityError), false);
+					
+					mediaRecorder = null;
+				}
+
+				if(mediaRecorder != null)
+				{
+					try
+					{
+						mediaRecorder.start();
+						isRecording = true;
+	
+						this.recordingStart = new Date();
+	
+						this.showNotification(this.getString(R.string.messageRecordingStarted), true);
+					}
+					catch (Exception e)
+					{
+						Utilities.logErrorMessage(LOG_TAG, "Error starting recorder", e);
+						e.printStackTrace();
+						mediaRecorder = null;
+						isRecording = false;
+						
+						this.configurationManager.setPhoneNumber("");
+	
+						this.showNotification(this.getString(R.string.phoneCompatibilityError), false);
+					}
 				}
 			}
 		}
@@ -217,7 +226,7 @@ public class CallRecordingService extends Service implements Runnable
 			call.setDuration(this.recordingEnd.getTime() - this.recordingStart.getTime());
 			call.setFilePath(this.getFilename(phoneNumber));
 			call.setIncomingNumber(this.configurationManager.getPhoneNumber());
-			call.setType(CallType.INCOMING);
+			call.setType(CallType.values()[this.configurationManager.getCallDirection()]);
 
 			this.dbManager.addCall(call);
 
@@ -238,7 +247,7 @@ public class CallRecordingService extends Service implements Runnable
 	{
 		if (this.configurationManager.getNotificationsEnabled())
 		{
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			{
 				Notification.Builder notificationBuilder = new Notification.Builder(this);
 				notificationBuilder.setSmallIcon(android.R.drawable.sym_def_app_icon);
@@ -307,8 +316,7 @@ public class CallRecordingService extends Service implements Runnable
 		{
 			fileExtension = ".m4a";
 		}
-
-		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd-hh.mm.ss");
-		return String.format("%s[%s] %s%s", this.configurationManager.getAppFolderStorage(), DateFormat.format("yyyy.MM.dd-hh.mm.ss", new Date()), number, fileExtension);
+		
+		return String.format("%s %s%s", DateFormat.format("yyyy-MM-dd hhmmss", new Date()), number, fileExtension);
 	}
 }
