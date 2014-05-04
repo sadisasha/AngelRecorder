@@ -5,14 +5,20 @@ import java.util.ArrayList;
 import net.wizartinteractive.database.DBManager;
 import net.wizartinteractive.dbmodels.Call;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CallsListFragment extends android.support.v4.app.Fragment
 {
@@ -47,6 +53,7 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 			DBManager.initializeDB(this.appContext);
 			this.dbManager = DBManager.getInstance();
 		}
+
 	}
 
 	@Override
@@ -56,13 +63,7 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 
 		this.contentView = inflater.inflate(R.layout.fragment_calls_list, container, false);
 
-		// this.updateCalls();
-		// this.callsListView = (ListView) contentView.findViewById(R.id.calls_listView);
-		// callsListView.setAdapter(new CallsListAdapter(getActivity(), R.layout.call_item, this.calls));
-		// callsList.setOnItemClickListener(CallsListFragment.this);
-
 		this.refreshCallsList(this.contentView);
-
 		return contentView;
 	}
 
@@ -70,6 +71,45 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
 		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
+	{
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		MenuInflater inflater = this.getActivity().getMenuInflater();
+		inflater.inflate(R.menu.contextual_calls_list, menu);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item)
+	{
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+
+		switch (item.getItemId())
+		{
+		case R.id.action_delete:
+
+			Toast toast = null;
+
+			if (this.dbManager.deleteCall(info.targetView.getId()))
+			{
+				toast = Toast.makeText(appContext, appContext.getString(R.string.messageDeleteSuccesfull), Toast.LENGTH_LONG);
+				this.refreshCallsList(this.contentView);
+			}
+			else
+			{
+				toast = Toast.makeText(appContext, appContext.getString(R.string.messageDeleteError), Toast.LENGTH_LONG);
+			}
+
+			toast.show();
+
+			return true;
+
+		default:
+			return super.onContextItemSelected(item);
+		}
 	}
 
 	@Override
@@ -116,7 +156,13 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 		{
 			noRecordsMessage.setVisibility(View.GONE);
 			this.callsListView = (ListView) contentView.findViewById(R.id.calls_listView);
+			this.registerForContextMenu(this.callsListView);
 			callsListView.setAdapter(new CallsListAdapter(getActivity(), R.layout.call_item, this.calls));
+			
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			{
+				
+			}
 		}
 	}
 

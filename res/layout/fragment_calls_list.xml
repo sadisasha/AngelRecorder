@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:tag="calls_list">
 
     <TextView
         android:id="@+id/noData_textView"
@@ -12,17 +13,18 @@
         android:gravity="center_horizontal|center_vertical"
         android:text="@string/messageNoData"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#E5E5E5"
+        android:textColor="#262626"
         android:visibility="gone" />
 
     <ListView
         android:id="@+id/calls_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#808080" 
-        android:divider="#B8B8B8"
+        android:background="#FFFFFF"
+        android:divider="#E5E5E5"
         android:dividerHeight="1dp"
-        android:padding="7dp">
+        android:listSelector="@drawable/selector_calls_list"
+        android:longClickable="true">
     </ListView>
 
 </LinearLayout>

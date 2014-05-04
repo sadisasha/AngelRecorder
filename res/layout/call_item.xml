@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    android:background="#9C9C9C"
-    android:padding="5dp" >
+    android:layout_height="60dp"
+    android:padding="1dp" >
 
     <TextView
         android:id="@+id/phoneNumber_textView"
@@ -15,8 +14,8 @@
         android:layout_toRightOf="@+id/contact_imageView"
         android:maxLines="1"
         android:text="Medium Text......."
-        android:textSize="20sp" 
-        android:textColor="#F0F0F0"/>
+        android:textColor="#252525"
+        android:textSize="20sp" />
 
     <ImageView
         android:id="@+id/phone_imageView"
@@ -35,15 +34,15 @@
         android:layout_toRightOf="@+id/phone_imageView"
         android:maxLines="2"
         android:text="Description"
-        android:textSize="15sp" 
-        android:textColor="#E5E5E5"/>
+        android:textColor="#A0A0A0"
+        android:textSize="15sp" />
 
     <ImageButton
         android:id="@+id/play_imageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="7dp"
+        android:layout_marginRight="18dp"
         android:layout_marginTop="15dp"
         android:background="#00FFFFFF"
         android:focusable="false"
@@ -57,9 +56,9 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="5dp"
         android:layout_marginTop="0dp"
-        android:text="Small Text"
-        android:textSize="12sp"
-        android:textColor="#F0F0F0" />
+        android:text="03/05/2014"
+        android:textColor="#A0A0A0"
+        android:textSize="10sp" />
 
     <ImageView
         android:id="@+id/contact_imageView"
@@ -67,7 +66,7 @@
         android:layout_height="60dp"
         android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/date_textView"
-        android:padding="0dp"
+        android:layout_marginLeft="5dp"
         android:src="@drawable/ic_default_contact_photo" />
 
 </RelativeLayout>

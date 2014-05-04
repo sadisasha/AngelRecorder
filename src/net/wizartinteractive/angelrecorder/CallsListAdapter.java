@@ -2,8 +2,6 @@ package net.wizartinteractive.angelrecorder;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -15,8 +13,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.PhoneLookup;
 import android.view.LayoutInflater;
@@ -81,39 +80,37 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 				public void onClick(View v)
 				{
 					Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-					String filePath = tempItemList.getFilePath();
-					
-					File file = new File(filePath);
-					
-					if(file.exists())
+					File file = new File(tempItemList.getFilePath());
+
+					if (file.exists())
 					{
-						viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
-						viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-	
-						appContext.startActivity(Intent.createChooser(viewIntent, null));
+						// viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
+						viewIntent.setDataAndType(Uri.fromFile(file), "file/*");
+						appContext.startActivity(Intent.createChooser(viewIntent, "Complete action using..."));
+
+						// viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
+						// appContext.startActivity(Intent.createChooser(viewIntent, null));
+
+						// try
+						// {
+						// MediaPlayer mediaPlayer = new MediaPlayer();
+						// mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+						// mediaPlayer.setDataSource(appContext, Uri.fromFile(file));
+						// mediaPlayer.prepare();
+						// mediaPlayer.start();
+						// }
+						// catch (Exception e)
+						// {
+						// e.printStackTrace();
+						// Toast toast = Toast.makeText(appContext, appContext.getString(R.string.mediaPlayingFileError), Toast.LENGTH_LONG);
+						// toast.show();
+						// }
 					}
 					else
 					{
 						Toast toast = Toast.makeText(appContext, appContext.getString(R.string.mediaPlayingFileError), Toast.LENGTH_LONG);
 						toast.show();
 					}
-					
-					// try
-					// {
-					// File file = new File(tempItemList.getFilePath());
-					// Uri fileUri = Uri.fromFile(file);
-					// MediaPlayer mediaPlayer = new MediaPlayer();
-					// mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-					// mediaPlayer.setDataSource(appContext, fileUri);
-					// mediaPlayer.prepare();
-					// mediaPlayer.start();
-					// }
-					// catch (Exception e)
-					// {
-					// e.printStackTrace();
-					// Toast toast = Toast.makeText(appContext, appContext.getString(R.string.mediaPlayingFileError), Toast.LENGTH_LONG);
-					// toast.show();
-					// }
 				}
 			});
 		}
@@ -160,6 +157,8 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 		viewHolder.details.setText(String.format("%s", Utilities.ConvertMilisecondsToHMS(tempItemList.getDuration())));
 		viewHolder.date.setText(String.format("%s", Utilities.ConvertDateToShortDateString(tempItemList.getDate())));
 		viewHolder.play.setTag(tempItemList);
+
+		convertView.setId((int) tempItemList.getId());
 
 		return convertView;
 	}
@@ -230,9 +229,6 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 		Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
 		Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
 		Cursor cursor = this.appContext.getContentResolver().query(photoUri, new String[] { ContactsContract.CommonDataKinds.Photo.PHOTO }, null, null, null);
-
-		// Uri photoUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, photo_id);
-		// Cursor c = cr.query(photoUri, new String[] { ContactsContract.CommonDataKinds.Photo.PHOTO }, null, null, null);
 
 		if (cursor == null)
 		{

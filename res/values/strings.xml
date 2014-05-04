@@ -3,11 +3,9 @@
 
     <!-- menus -->
     <string name="app_name">Angel Recorder</string>
-    <string name="action_search">Search</string>
-    <string name="action_refresh">Refresh</string>
-    <string name="action_filters">Filters</string>
     <string name="action_settings">Settings</string>
     <string name="action_about">About</string>
+    <string name="action_delete">Delete</string>
 
     <!-- service preferences -->
     <string name="preference_serviceCategoryTitle">Service Settings</string>
@@ -43,5 +41,13 @@
     <string name="phoneCompatibilityError">Audio Source is not supported on your phone, try record from another Audio Source.</string>
     <string name="phoneRecordgingError">An error occurred, call won\'t be recorded.</string>
     <string name="mediaPlayingFileError">Error, file doesn\'t exists.</string>
+    <string name="messageDeleteSuccesfull">Successfully deleted.</string>
+    <string name="messageDeleteError">An error occurred while deleting, try again later.</string>
+
+    <!-- about info -->
+    <string name="about_title">Angel Recorder</string>
+    <string name="about_description">Description</string>
+    <string name="about_version">v0.1.1</string>
+    <string name="about_developerInfo">Developed by: \n WizArt Interactive</string>
 
 </resources>

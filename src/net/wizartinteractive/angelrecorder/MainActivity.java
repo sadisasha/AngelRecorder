@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,6 +72,10 @@ public class MainActivity extends ActionBarActivity
 
 		case R.id.action_about:
 
+			AboutFragment aboutFragment = new AboutFragment();
+
+			this.setMainFragmentContent(aboutFragment);
+
 			break;
 
 		default:
@@ -118,6 +123,17 @@ public class MainActivity extends ActionBarActivity
 		super.onDestroy();
 	}
 
+	@Override
+	public void onBackPressed()
+	{
+		super.onBackPressed();
+
+		if (this.fragmentManager.getBackStackEntryCount() == 0)
+		{
+			this.finish();
+		}
+	}
+
 	private void initializeFragmentManager()
 	{
 		if (this.fragmentManager == null)
@@ -129,7 +145,11 @@ public class MainActivity extends ActionBarActivity
 	private void setMainFragmentContent(Fragment fragment)
 	{
 		this.initializeFragmentManager();
-		fragmentManager.beginTransaction().replace(R.id.main_content_frame, fragment).commit();
-		// fragmentManager.beginTransaction().add(R.id.main_content_frame, fragment).addToBackStack(CallsListFragment.FRAGMENT_NAME).commit();
+
+		FragmentTransaction transaction = this.fragmentManager.beginTransaction();
+		transaction.replace(R.id.main_content_frame, fragment);
+		transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+		transaction.addToBackStack(fragment.getClass().getSimpleName());
+		transaction.commit();
 	}
 }

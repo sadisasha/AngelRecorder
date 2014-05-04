@@ -48,6 +48,8 @@ public class CallRecordingService extends Service implements Runnable
 	private static Date recordingStart = null;
 	private static Date recordingEnd = null;
 
+	private static Date fileNameDate = null;
+
 	private final BroadcastReceiver incomingCallReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -149,6 +151,8 @@ public class CallRecordingService extends Service implements Runnable
 		{
 			this.phoneNumber = this.configurationManager.getPhoneNumber();
 
+			this.fileNameDate = new Date();
+
 			Utilities.logDebugMessage(LOG_TAG, String.format("Recording started saving to file: %s", this.getFilename(this.phoneNumber)));
 
 			if (phoneNumber != "")
@@ -170,7 +174,7 @@ public class CallRecordingService extends Service implements Runnable
 
 				mediaRecorder.setMaxDuration(0);
 
-				mediaRecorder.setOutputFile(this.configurationManager.getAppFolderStorage() + this.getFilename(phoneNumber));
+				mediaRecorder.setOutputFile(this.getFilename(phoneNumber));
 
 				try
 				{
@@ -180,21 +184,21 @@ public class CallRecordingService extends Service implements Runnable
 				{
 					Utilities.logErrorMessage(LOG_TAG, "Error preparing recorder.", e);
 					e.printStackTrace();
-					
+
 					this.showNotification(this.getString(R.string.phoneCompatibilityError), false);
-					
+
 					mediaRecorder = null;
 				}
 
-				if(mediaRecorder != null)
+				if (mediaRecorder != null)
 				{
 					try
 					{
 						mediaRecorder.start();
 						isRecording = true;
-	
+
 						this.recordingStart = new Date();
-	
+
 						this.showNotification(this.getString(R.string.messageRecordingStarted), true);
 					}
 					catch (Exception e)
@@ -203,9 +207,9 @@ public class CallRecordingService extends Service implements Runnable
 						e.printStackTrace();
 						mediaRecorder = null;
 						isRecording = false;
-						
+
 						this.configurationManager.setPhoneNumber("");
-	
+
 						this.showNotification(this.getString(R.string.phoneCompatibilityError), false);
 					}
 				}
@@ -234,13 +238,14 @@ public class CallRecordingService extends Service implements Runnable
 			mediaRecorder.reset();
 			mediaRecorder.release();
 			isRecording = false;
-			
+
 			this.configurationManager.setPhoneNumber("");
 
 			this.showNotification(this.getString(R.string.messageRecordingStopped), false);
 		}
 
 		mediaRecorder = null;
+		this.fileNameDate = null;
 	}
 
 	private void showNotification(String message, boolean started)
@@ -316,7 +321,7 @@ public class CallRecordingService extends Service implements Runnable
 		{
 			fileExtension = ".m4a";
 		}
-		
-		return String.format("%s %s%s", DateFormat.format("yyyy-MM-dd hhmmss", new Date()), number, fileExtension);
+
+		return String.format("%s%s %s%s", this.configurationManager.getAppFolderStorage(), DateFormat.format("yyyy-MM-dd hhmmss", this.fileNameDate), number, fileExtension);
 	}
 }
