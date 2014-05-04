@@ -36,7 +36,9 @@ public class CallRecordingService extends Service implements Runnable
 	private MediaRecorder mediaRecorder;
 	private final Handler handler = new Handler();
 
-	private static boolean isRecording = false;
+	private boolean isRecording = false;
+	private boolean prepareFailed = false;
+	private boolean startFailed = false;
 
 	private static final String INCOMING_CALL_ACTION = "android.intent.action.PHONE_STATE";
 	public static final int NOTIFICATION_ID_RECEIVED = 0x1221;
@@ -50,57 +52,57 @@ public class CallRecordingService extends Service implements Runnable
 
 	private static Date fileNameDate = null;
 
-	private final BroadcastReceiver incomingCallReceiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			MyPhoneListener phoneListener = new MyPhoneListener(context);
-			TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-			telephony.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
-
-			Bundle extras = intent.getExtras();
-
-			if (extras != null)
-			{
-				String state = extras.getString(TelephonyManager.EXTRA_STATE);
-
-				if (state.equals(TelephonyManager.EXTRA_STATE_RINGING))
-				{
-					phoneNumber = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-					configurationManager.setPhoneNumber(phoneNumber);
-				}
-			}
-		}
-
-		class MyPhoneListener extends PhoneStateListener
-		{
-			private Context appContext;
-
-			MyPhoneListener(Context context)
-			{
-				super();
-				appContext = context;
-			}
-
-			@Override
-			public void onCallStateChanged(int state, String incomingNumber)
-			{
-				switch (state)
-				{
-				case TelephonyManager.CALL_STATE_IDLE:
-
-					if (isRecording)
-					{
-						stopRecording();
-					}
-
-					break;
-				}
-			}
-
-		}
-	};
+	// private final BroadcastReceiver incomingCallReceiver = new BroadcastReceiver()
+	// {
+	// @Override
+	// public void onReceive(Context context, Intent intent)
+	// {
+	// MyPhoneListener phoneListener = new MyPhoneListener(context);
+	// TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+	// telephony.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+	//
+	// Bundle extras = intent.getExtras();
+	//
+	// if (extras != null)
+	// {
+	// String state = extras.getString(TelephonyManager.EXTRA_STATE);
+	//
+	// if (state.equals(TelephonyManager.EXTRA_STATE_RINGING))
+	// {
+	// phoneNumber = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+	// configurationManager.setPhoneNumber(phoneNumber);
+	// }
+	// }
+	// }
+	//
+	// class MyPhoneListener extends PhoneStateListener
+	// {
+	// private Context appContext;
+	//
+	// MyPhoneListener(Context context)
+	// {
+	// super();
+	// appContext = context;
+	// }
+	//
+	// @Override
+	// public void onCallStateChanged(int state, String incomingNumber)
+	// {
+	// switch (state)
+	// {
+	// case TelephonyManager.CALL_STATE_IDLE:
+	//
+	// if (isRecording)
+	// {
+	// stopRecording();
+	// }
+	//
+	// break;
+	// }
+	// }
+	//
+	// }
+	// };
 
 	@Override
 	public void onCreate()
@@ -119,9 +121,9 @@ public class CallRecordingService extends Service implements Runnable
 			this.dbManager = DBManager.getInstance();
 		}
 
-		IntentFilter intentToReceiveFilter = new IntentFilter();
-		intentToReceiveFilter.addAction(INCOMING_CALL_ACTION);
-		this.registerReceiver(incomingCallReceiver, intentToReceiveFilter, null, handler);
+		// IntentFilter intentToReceiveFilter = new IntentFilter();
+		// intentToReceiveFilter.addAction(INCOMING_CALL_ACTION);
+		// this.registerReceiver(incomingCallReceiver, intentToReceiveFilter, null, handler);
 
 		Thread aThread = new Thread(this);
 		aThread.start();
@@ -130,7 +132,7 @@ public class CallRecordingService extends Service implements Runnable
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-		this.phoneNumber = this.configurationManager.getPhoneNumber();
+		// this.phoneNumber = this.configurationManager.getPhoneNumber();
 
 		return START_STICKY_COMPATIBILITY;
 	}
@@ -142,10 +144,18 @@ public class CallRecordingService extends Service implements Runnable
 	}
 
 	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+
+		this.stopRecording();
+	}
+
+	@Override
 	public void run()
 	{
-		Looper.myLooper();
-		Looper.prepare();
+		// Looper.myLooper();
+		// Looper.prepare();
 
 		if (this.configurationManager.getServiceEnabled())
 		{
@@ -153,13 +163,10 @@ public class CallRecordingService extends Service implements Runnable
 
 			this.fileNameDate = new Date();
 
-			Utilities.logDebugMessage(LOG_TAG, String.format("Recording started saving to file: %s", this.getFilename(this.phoneNumber)));
-
 			if (phoneNumber != "")
 			{
 				mediaRecorder = new MediaRecorder();
-				// mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-				// mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+				mediaRecorder.reset();
 				mediaRecorder.setAudioSource(this.configurationManager.getAudioSource());
 				mediaRecorder.setOutputFormat(this.configurationManager.getAudioFormat());
 
@@ -186,8 +193,9 @@ public class CallRecordingService extends Service implements Runnable
 					e.printStackTrace();
 
 					this.showNotification(this.getString(R.string.phoneCompatibilityError), false);
+					prepareFailed = true;
 
-					mediaRecorder = null;
+					// mediaRecorder = null;
 				}
 
 				if (mediaRecorder != null)
@@ -199,19 +207,25 @@ public class CallRecordingService extends Service implements Runnable
 
 						this.recordingStart = new Date();
 
+						Utilities.logDebugMessage(LOG_TAG, String.format("Recording started saving to file: %s", this.getFilename(this.phoneNumber)));
+
 						this.showNotification(this.getString(R.string.messageRecordingStarted), true);
 					}
 					catch (Exception e)
 					{
 						Utilities.logErrorMessage(LOG_TAG, "Error starting recorder", e);
 						e.printStackTrace();
-						mediaRecorder = null;
+						// mediaRecorder = null;
 						isRecording = false;
+						startFailed = true;
 
 						this.configurationManager.setPhoneNumber("");
-
-						this.showNotification(this.getString(R.string.phoneCompatibilityError), false);
 					}
+				}
+
+				if (!this.isRecording && (this.prepareFailed || this.startFailed))
+				{
+					this.showNotification(this.getString(R.string.phoneCompatibilityError), false);
 				}
 			}
 		}
@@ -219,10 +233,10 @@ public class CallRecordingService extends Service implements Runnable
 
 	void stopRecording()
 	{
-		Utilities.logDebugMessage(LOG_TAG, String.format("Recording stopped call duration: %s seconds", (new Date().getTime() - this.recordingStart.getTime()) / 1000));
-
 		if (isRecording)
 		{
+			Utilities.logDebugMessage(LOG_TAG, String.format("Recording stopped call duration: %s seconds", (new Date().getTime() - this.recordingStart.getTime()) / 1000));
+
 			this.recordingEnd = new Date();
 
 			Call call = new Call();
@@ -235,8 +249,6 @@ public class CallRecordingService extends Service implements Runnable
 			this.dbManager.addCall(call);
 
 			mediaRecorder.stop();
-			mediaRecorder.reset();
-			mediaRecorder.release();
 			isRecording = false;
 
 			this.configurationManager.setPhoneNumber("");
@@ -244,6 +256,8 @@ public class CallRecordingService extends Service implements Runnable
 			this.showNotification(this.getString(R.string.messageRecordingStopped), false);
 		}
 
+		mediaRecorder.reset();
+		mediaRecorder.release();
 		mediaRecorder = null;
 		this.fileNameDate = null;
 	}
@@ -322,6 +336,6 @@ public class CallRecordingService extends Service implements Runnable
 			fileExtension = ".m4a";
 		}
 
-		return String.format("%s%s %s%s", this.configurationManager.getAppFolderStorage(), DateFormat.format("yyyy-MM-dd hhmmss", this.fileNameDate), number, fileExtension);
+		return String.format("%s[%s] %s%s", this.configurationManager.getAppFolderStorage(), DateFormat.format("yyyy-MM-dd hhmmss", this.fileNameDate), number, fileExtension);
 	}
 }

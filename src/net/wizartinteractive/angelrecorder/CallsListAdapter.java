@@ -84,27 +84,8 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 
 					if (file.exists())
 					{
-						// viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
-						viewIntent.setDataAndType(Uri.fromFile(file), "file/*");
+						viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
 						appContext.startActivity(Intent.createChooser(viewIntent, "Complete action using..."));
-
-						// viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
-						// appContext.startActivity(Intent.createChooser(viewIntent, null));
-
-						// try
-						// {
-						// MediaPlayer mediaPlayer = new MediaPlayer();
-						// mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-						// mediaPlayer.setDataSource(appContext, Uri.fromFile(file));
-						// mediaPlayer.prepare();
-						// mediaPlayer.start();
-						// }
-						// catch (Exception e)
-						// {
-						// e.printStackTrace();
-						// Toast toast = Toast.makeText(appContext, appContext.getString(R.string.mediaPlayingFileError), Toast.LENGTH_LONG);
-						// toast.show();
-						// }
 					}
 					else
 					{

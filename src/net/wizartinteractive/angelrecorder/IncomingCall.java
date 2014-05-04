@@ -62,7 +62,6 @@ public class IncomingCall extends BroadcastReceiver
 				Utilities.logDebugMessage(LOG_TAG, String.format("Phone call offhook, number %s", this.configurationManager.getPhoneNumber()));
 
 				Intent recordingServiceIntent = new Intent(this.context, CallRecordingService.class);
-				// recordingServiceIntent.putExtra("phoneNumber", this.configurationManager.getPhoneNumber());
 				context.startService(recordingServiceIntent);
 
 				return;
@@ -70,6 +69,9 @@ public class IncomingCall extends BroadcastReceiver
 			case TelephonyManager.CALL_STATE_IDLE:
 
 				Utilities.logDebugMessage(LOG_TAG, String.format("Phone call hung up, incoming number %s. STOPING recording service", this.configurationManager.getPhoneNumber()));
+				
+				Intent stopRecordingServiceIntent = new Intent(this.context, CallRecordingService.class);
+				context.stopService(stopRecordingServiceIntent);
 
 				break;
 

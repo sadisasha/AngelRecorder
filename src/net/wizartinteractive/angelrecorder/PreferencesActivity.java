@@ -1,10 +1,13 @@
 package net.wizartinteractive.angelrecorder;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.Menu;
 
-public class PreferencesActivity extends PreferenceActivity
+public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
 
 	public static final String AUDIO_SOURCE_KEY = "PreferenceAudioSource";
@@ -68,5 +71,17 @@ public class PreferencesActivity extends PreferenceActivity
 	protected void onDestroy()
 	{
 		super.onDestroy();
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+	{
+		ConfigurationManager.Init(getApplicationContext());
+
+		if (key.equals(this.SERVICE_ENABLED_KEY) && !ConfigurationManager.getInstance().getServiceEnabled())
+		{
+			Intent stopRecordingServiceIntent = new Intent(getApplicationContext(), CallRecordingService.class);
+			getApplicationContext().stopService(stopRecordingServiceIntent);
+		}
 	}
 }
