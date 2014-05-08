@@ -1,4 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
+
+    <!-- menus -->
+    <string name="app_name">Angel Recorder</string>
+    <string name="action_settings">Preferencias</string>
+    <string name="action_about">Acerca de</string>
+    <string name="action_delete">Eliminar</string>
+
+    <!-- service preferences -->
+    <string name="preference_serviceCategoryTitle">Preferencias del Servicio</string>
+    <string name="preference_isServiceEnabledTitle">Activado</string>
+    <string name="preference_isServiceEnabledSummary">Active el servicio para grabar todas las llamadas entrantes y salientes</string>
+    <string name="preference_areNotificationsEnabledTitle">Notificaciones</string>
+    <string name="preference_areNotificationsEnabledSummary">Mostrar notificaciones de los eventos al grabar</string>
+
+    <!-- audioSource preferences -->
+    <string name="preference_audioCategoryTitle">Preferencias de Audio</string>
+    <string name="preference_audioSourceTitle">Origen del Audio</string>
+    <string name="preference_audioSourceSummary">Seleccione el origen del audio a grabar durante las llamadas</string>
+    <string name="preference_audioSource_DEFAULT">Predeterminado</string>
+    <string name="preference_audioSource_MIC">Micrófono</string>
+    <string name="preference_audioSource_VOICECALL">Ambas voces</string>
+    <string name="preference_audioSource_UPLINK">Solo mi voz</string>
+    <string name="preference_audioSource_DOWNLINK">Solo su voz</string>
+
+    <!-- audioFormat preferences -->
+    <string name="preference_outputFormatTitle">Formato de Salida</string>
+    <string name="preference_outputFormatSummary">Seleccione el formato de archivo a usar durante la grabación de las llamadas</string>
+    <string name="preference_outputFormat_DEFAULT">Predeterminado</string>
+    <string name="preference_outputFormat_THREE_GPP">3GPP/3GP</string>
+    <string name="preference_outputFormat_AAC">AAC/M4A</string>
+    <string name="preference_outputFormat_MPEG_4">MPEG4/MP4</string>
+
+    <!-- info messages -->
+    <string name="messageRecordingStarted">Grabando llamada en curso</string>
+    <string name="messageRecordingStopped">La llamada fue grabada exitosamente</string>
+    <string name="messageNoData">No existen registros de grabaciones</string>
+
+    <!-- error messages -->
+    <string name="phoneCompatibilityError">El origen del audio seleccionado no es soportado en su telefono, intente con alguna otra fuente de audio</string>
+    <string name="phoneRecordgingError">Ha ocurrido un error durante la grabación, la llamada no será grabada</string>
+    <string name="mediaPlayingFileError">Error, no se encuentra el archivo</string>
+    <string name="messageDeleteSuccesfull">Registro eliminado exitosamente</string>
+    <string name="messageDeleteError">Ocurrió un error al borrar, intentelo de nuevo</string>
+
+    <!-- about info -->
+    <string name="about_title">Angel Recorder</string>
+    <string name="about_description">Descripción</string>
+    <string name="about_version">v0.1.1</string>
+    <string name="about_developerInfo">Desarrollado por: \n WizArt Interactive</string>
+
 </resources>

@@ -269,7 +269,7 @@ public class CallRecordingService extends Service implements Runnable
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			{
 				Notification.Builder notificationBuilder = new Notification.Builder(this);
-				notificationBuilder.setSmallIcon(android.R.drawable.sym_def_app_icon);
+				notificationBuilder.setSmallIcon(R.drawable.ic_notification);
 				notificationBuilder.setContentTitle(Constants.NOTIFICATION_TITLE);
 				notificationBuilder.setContentText(message);
 				notificationBuilder.setAutoCancel(true);
@@ -294,7 +294,7 @@ public class CallRecordingService extends Service implements Runnable
 			else
 			{
 				NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
-				notificationBuilder.setSmallIcon(android.R.drawable.sym_def_app_icon);
+				notificationBuilder.setSmallIcon(R.drawable.ic_notification);
 				notificationBuilder.setContentTitle(Constants.NOTIFICATION_TITLE);
 				notificationBuilder.setContentText(message);
 				notificationBuilder.setAutoCancel(true);

@@ -33,16 +33,16 @@
     <string name="preference_outputFormat_MPEG_4">MPEG4/MP4</string>
 
     <!-- info messages -->
-    <string name="messageRecordingStarted">Current call is being recorded.</string>
-    <string name="messageRecordingStopped">Call has been recorded.</string>
-    <string name="messageNoData">No recorded calls.</string>
+    <string name="messageRecordingStarted">Current call is being recorded</string>
+    <string name="messageRecordingStopped">Call has been recorded</string>
+    <string name="messageNoData">No recorded calls</string>
 
     <!-- error messages -->
-    <string name="phoneCompatibilityError">Audio Source is not supported on your phone, try record from another Audio Source.</string>
-    <string name="phoneRecordgingError">An error occurred, call won\'t be recorded.</string>
-    <string name="mediaPlayingFileError">Error, file doesn\'t exists.</string>
+    <string name="phoneCompatibilityError">Audio Source is not supported on your phone, try record from another Audio Source</string>
+    <string name="phoneRecordgingError">An error occurred, call won\'t be recorded</string>
+    <string name="mediaPlayingFileError">Error, file doesn\'t exists</string>
     <string name="messageDeleteSuccesfull">Successfully deleted.</string>
-    <string name="messageDeleteError">An error occurred while deleting, try again later.</string>
+    <string name="messageDeleteError">An error occurred while deleting, try again later</string>
 
     <!-- about info -->
     <string name="about_title">Angel Recorder</string>

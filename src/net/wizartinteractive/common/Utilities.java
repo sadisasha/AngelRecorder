@@ -62,7 +62,7 @@ public class Utilities extends MainActivity
 
 			OutputStreamWriter fileOut = new OutputStreamWriter(new FileOutputStream(logFile));
 
-			fileOut.write(message);
+			fileOut.append(message);
 			fileOut.close();
 		}
 		catch (Exception ex)
