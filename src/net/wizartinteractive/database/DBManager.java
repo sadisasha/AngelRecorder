@@ -191,4 +191,18 @@ public class DBManager
 
 		return false;
 	}
+
+	public synchronized boolean deleteAllCalls()
+	{
+		ArrayList<Call> calls = this.getCalls();
+
+		for (Call call : calls)
+		{
+			this.getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", call.getId()), null);
+		}
+		
+		this.getInstance().closeDatabase();
+
+		return true;
+	}
 }

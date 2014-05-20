@@ -21,6 +21,8 @@ public final class R {
         public static final int audioFormatValues=0x7f0d0003;
         public static final int audioSourceOptions=0x7f0d0000;
         public static final int audioSourceValues=0x7f0d0001;
+        public static final int autoDeleteOptions=0x7f0d0004;
+        public static final int autoDeleteValues=0x7f0d0005;
     }
     public static final class attr {
         /**  Custom divider drawable to use for elements in the action bar. 
@@ -1001,7 +1003,7 @@ containing a value of this type.
         public static final int TextView01=0x7f060047;
         public static final int abouTitle_textView=0x7f060045;
         public static final int aboutAppIcon_imageView=0x7f060044;
-        public static final int action_about=0x7f06004c;
+        public static final int action_about=0x7f06004d;
         public static final int action_bar=0x7f06001c;
         public static final int action_bar_activity_content=0x7f060015;
         public static final int action_bar_container=0x7f06001b;
@@ -1010,11 +1012,12 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f060023;
         public static final int action_bar_title=0x7f060022;
         public static final int action_context_bar=0x7f06001d;
-        public static final int action_delete=0x7f06004a;
+        public static final int action_deleteAll=0x7f06004b;
+        public static final int action_deleteSelected=0x7f06004a;
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
-        public static final int action_settings=0x7f06004b;
+        public static final int action_settings=0x7f06004c;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int beginning=0x7f060011;
@@ -1177,62 +1180,74 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000b;
-        public static final int about_description=0x7f0b002d;
-        public static final int about_developerInfo=0x7f0b002f;
+        public static final int about_description=0x7f0b0036;
+        public static final int about_developerInfo=0x7f0b0038;
         /**  about info 
  about info 
          */
-        public static final int about_title=0x7f0b002c;
-        public static final int about_version=0x7f0b002e;
+        public static final int about_title=0x7f0b0035;
+        public static final int about_version=0x7f0b0037;
         public static final int action_about=0x7f0b000f;
-        public static final int action_delete=0x7f0b0010;
+        public static final int action_deleteAll=0x7f0b0011;
+        public static final int action_deleteSelected=0x7f0b0010;
         public static final int action_settings=0x7f0b000e;
         /**  menus 
  menus 
          */
         public static final int app_name=0x7f0b000d;
-        public static final int mediaPlayingFileError=0x7f0b0029;
-        public static final int messageDeleteError=0x7f0b002b;
-        public static final int messageDeleteSuccesfull=0x7f0b002a;
-        public static final int messageNoData=0x7f0b0026;
+        public static final int mediaPlayingFileError=0x7f0b0032;
+        public static final int messageDeleteError=0x7f0b0034;
+        public static final int messageDeleteSuccesfull=0x7f0b0033;
+        public static final int messageNoData=0x7f0b002e;
         /**  info messages 
  info messages 
          */
-        public static final int messageRecordingStarted=0x7f0b0024;
-        public static final int messageRecordingStopped=0x7f0b0025;
+        public static final int messageRecordingStarted=0x7f0b002c;
+        public static final int messageRecordingStopped=0x7f0b002d;
+        public static final int messageSelectedItems=0x7f0b002f;
         /**  error messages 
  error messages 
          */
-        public static final int phoneCompatibilityError=0x7f0b0027;
-        public static final int phoneRecordgingError=0x7f0b0028;
-        public static final int preference_areNotificationsEnabledSummary=0x7f0b0015;
-        public static final int preference_areNotificationsEnabledTitle=0x7f0b0014;
+        public static final int phoneCompatibilityError=0x7f0b0030;
+        public static final int phoneRecordgingError=0x7f0b0031;
+        public static final int preference_areNotificationsEnabledSummary=0x7f0b0016;
+        public static final int preference_areNotificationsEnabledTitle=0x7f0b0015;
         /**  audioSource preferences 
  audioSource preferences 
          */
-        public static final int preference_audioCategoryTitle=0x7f0b0016;
-        public static final int preference_audioSourceSummary=0x7f0b0018;
-        public static final int preference_audioSourceTitle=0x7f0b0017;
-        public static final int preference_audioSource_DEFAULT=0x7f0b0019;
-        public static final int preference_audioSource_DOWNLINK=0x7f0b001d;
-        public static final int preference_audioSource_MIC=0x7f0b001a;
-        public static final int preference_audioSource_UPLINK=0x7f0b001c;
-        public static final int preference_audioSource_VOICECALL=0x7f0b001b;
-        public static final int preference_isServiceEnabledSummary=0x7f0b0013;
-        public static final int preference_isServiceEnabledTitle=0x7f0b0012;
-        public static final int preference_outputFormatSummary=0x7f0b001f;
+        public static final int preference_audioCategoryTitle=0x7f0b0017;
+        public static final int preference_audioSourceSummary=0x7f0b0019;
+        public static final int preference_audioSourceTitle=0x7f0b0018;
+        public static final int preference_audioSource_DEFAULT=0x7f0b001a;
+        public static final int preference_audioSource_DOWNLINK=0x7f0b001e;
+        public static final int preference_audioSource_MIC=0x7f0b001b;
+        public static final int preference_audioSource_UPLINK=0x7f0b001d;
+        public static final int preference_audioSource_VOICECALL=0x7f0b001c;
+        public static final int preference_autoDeleteDaily=0x7f0b0029;
+        public static final int preference_autoDeleteMonthly=0x7f0b002b;
+        public static final int preference_autoDeleteSummary=0x7f0b0026;
+        /**  automatic delete preferences 
+ automatic delete preferences 
+         */
+        public static final int preference_autoDeleteTitle=0x7f0b0025;
+        public static final int preference_autoDeleteWeekly=0x7f0b002a;
+        public static final int preference_isAutoDeleteEnabledSummary=0x7f0b0028;
+        public static final int preference_isAutoDeleteEnabledTitle=0x7f0b0027;
+        public static final int preference_isServiceEnabledSummary=0x7f0b0014;
+        public static final int preference_isServiceEnabledTitle=0x7f0b0013;
+        public static final int preference_outputFormatSummary=0x7f0b0020;
         /**  audioFormat preferences 
  audioFormat preferences 
          */
-        public static final int preference_outputFormatTitle=0x7f0b001e;
-        public static final int preference_outputFormat_AAC=0x7f0b0022;
-        public static final int preference_outputFormat_DEFAULT=0x7f0b0020;
-        public static final int preference_outputFormat_MPEG_4=0x7f0b0023;
-        public static final int preference_outputFormat_THREE_GPP=0x7f0b0021;
+        public static final int preference_outputFormatTitle=0x7f0b001f;
+        public static final int preference_outputFormat_AAC=0x7f0b0023;
+        public static final int preference_outputFormat_DEFAULT=0x7f0b0021;
+        public static final int preference_outputFormat_MPEG_4=0x7f0b0024;
+        public static final int preference_outputFormat_THREE_GPP=0x7f0b0022;
         /**  service preferences 
  service preferences 
          */
-        public static final int preference_serviceCategoryTitle=0x7f0b0011;
+        public static final int preference_serviceCategoryTitle=0x7f0b0012;
     }
     public static final class style {
         /** 

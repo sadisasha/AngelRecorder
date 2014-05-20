@@ -7,6 +7,8 @@ import net.wizartinteractive.dbmodels.Call;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -15,12 +17,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CallsListFragment extends android.support.v4.app.Fragment
+public class CallsListFragment extends android.support.v4.app.Fragment implements MultiChoiceModeListener
 {
 	public static final String FRAGMENT_NAME = "CALLS_LIST";
 
@@ -32,6 +35,7 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 
 	private View contentView = null;
 	private ListView callsListView = null;
+	private CallsListAdapter callsListAdapter = null;
 
 	public CallsListFragment()
 	{
@@ -89,7 +93,7 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 
 		switch (item.getItemId())
 		{
-		case R.id.action_delete:
+		case R.id.action_deleteSelected:
 
 			Toast toast = null;
 
@@ -154,14 +158,20 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 		}
 		else
 		{
+			this.callsListAdapter = new CallsListAdapter(getActivity(), R.layout.call_item, this.calls);
+
 			noRecordsMessage.setVisibility(View.GONE);
 			this.callsListView = (ListView) contentView.findViewById(R.id.calls_listView);
-			this.registerForContextMenu(this.callsListView);
-			callsListView.setAdapter(new CallsListAdapter(getActivity(), R.layout.call_item, this.calls));
-			
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
 			{
-				
+				registerForContextMenu(this.callsListView);
+			}
+			else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			{
+				this.callsListView.setAdapter(this.callsListAdapter);
+				this.callsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+				this.callsListView.setMultiChoiceModeListener(this);
 			}
 		}
 	}
@@ -169,5 +179,90 @@ public class CallsListFragment extends android.support.v4.app.Fragment
 	public void updateCalls()
 	{
 		this.calls = this.dbManager.getCalls();
+	}
+
+	@Override
+	public boolean onCreateActionMode(ActionMode mode, Menu menu)
+	{
+		MenuInflater inflater = mode.getMenuInflater();
+		inflater.inflate(R.menu.contextual_calls_list, menu);
+
+		return true;
+	}
+
+	@Override
+	public boolean onPrepareActionMode(ActionMode mode, Menu menu)
+	{
+		return false;
+	}
+
+	@Override
+	public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+		case R.id.action_deleteSelected:
+			
+			this.deleteSelected();
+			mode.finish();
+
+			return true;
+
+		case R.id.action_deleteAll:
+			
+			this.deleteAll();
+
+			return true;
+
+		default:
+
+			return false;
+		}
+	}
+
+	@Override
+	public void onDestroyActionMode(ActionMode mode)
+	{
+	}
+
+	@Override
+	public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked)
+	{
+		int selectedItems = this.callsListView.getCheckedItemCount();
+		
+		mode.setTitle(String.format("%s %s", selectedItems, this.getString(R.string.messageSelectedItems)));
+	}
+	
+	private void deleteSelected()
+	{
+		SparseBooleanArray selectedItems = this.callsListView.getCheckedItemPositions();
+		int end = selectedItems.size();
+		
+		for (int i = 0; i < end; i++)
+		{
+			 if (selectedItems.get(i)) 
+			 {
+				 long id = this.callsListAdapter.getItemId(i);
+				 this.dbManager.deleteCall(id);
+			 }
+			 
+			 Call call = this.callsListAdapter.getItem(i);
+			 this.callsListAdapter.remove(call);
+		}
+	}
+	
+	private void deleteAll()
+	{
+		ArrayList<Call> calls = this.dbManager.getCalls();
+
+		int end = calls.size();
+		
+		for (int i = 0; i < end; i++)
+		{
+			 this.dbManager.deleteCall(calls.get(i).getId());
+			 
+			 Call call = this.callsListAdapter.getItem(i);
+			 this.callsListAdapter.remove(call);
+		}
 	}
 }

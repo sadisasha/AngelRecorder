@@ -5,7 +5,8 @@
     <string name="app_name">Angel Recorder</string>
     <string name="action_settings">Preferencias</string>
     <string name="action_about">Acerca de</string>
-    <string name="action_delete">Eliminar</string>
+    <string name="action_deleteSelected">Eliminar Seleccionados</string>
+    <string name="action_deleteAll">Eliminar Todos</string>
 
     <!-- service preferences -->
     <string name="preference_serviceCategoryTitle">Preferencias del Servicio</string>
@@ -31,11 +32,21 @@
     <string name="preference_outputFormat_THREE_GPP">3GPP/3GP</string>
     <string name="preference_outputFormat_AAC">AAC/M4A</string>
     <string name="preference_outputFormat_MPEG_4">MPEG4/MP4</string>
+    
+    <!-- automatic delete preferences -->
+    <string name="preference_autoDeleteTitle">Limpieza Automåtica</string>
+    <string name="preference_autoDeleteSummary">Active esta opcion para limpiar los resgistros de llamadas automaticamente</string>
+    <string name="preference_isAutoDeleteEnabledTitle">Activado</string>
+    <string name="preference_isAutoDeleteEnabledSummary">Active esta opcion para borrar los registros de llamadas automaticamente.</string>
+    <string name="preference_autoDeleteDaily">Diariamente</string>
+    <string name="preference_autoDeleteWeekly">Semanalmente</string>
+    <string name="preference_autoDeleteMonthly">Mensualmente</string>
 
     <!-- info messages -->
     <string name="messageRecordingStarted">Grabando llamada en curso</string>
     <string name="messageRecordingStopped">La llamada fue grabada exitosamente</string>
     <string name="messageNoData">No existen registros de grabaciones</string>
+    <string name="messageSelectedItems">Seleccionados</string>
 
     <!-- error messages -->
     <string name="phoneCompatibilityError">El origen del audio seleccionado no es soportado en su telefono, intente con alguna otra fuente de audio</string>
