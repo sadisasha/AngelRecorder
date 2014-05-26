@@ -92,7 +92,7 @@ public class DBManager
 	{
 		Call call = null;
 
-		String[] columns = new String[] { "Id", "IncomingNumber", "Date", "Duration", "Type", "FilePath" };
+		String[] columns = new String[] { "Id", "IncomingNumber", "Date", "Duration", "Type", "FilePath", "Favorite" };
 
 		// Cursor cursor = database.query(this.CALLS_TABLE, columns, String.format("Id = %s", id), null, null, null, null);
 		Cursor cursor = this.getInstance().getWritableDB().query(this.CALLS_TABLE, columns, String.format("Id = %s", id), null, null, null, null);
@@ -107,6 +107,7 @@ public class DBManager
 			call.setDuration(cursor.getLong(3));
 			call.setType(CallType.values()[cursor.getInt(4)]);
 			call.setFilePath(cursor.getString(5));
+			call.setFavorite(cursor.getInt(6) > 0);
 		}
 
 		this.getInstance().closeDatabase();
@@ -156,6 +157,7 @@ public class DBManager
 		values.put("Duration", call.getDuration());
 		values.put("Type", call.getType().getType());
 		values.put("FilePath", call.getFilePath());
+		values.put("Favorite", call.getFavorite() ? 1 : 0);
 
 		// long id = this.database.insert(this.CALLS_TABLE, null, values);
 
@@ -175,11 +177,23 @@ public class DBManager
 			return false;
 		}
 	}
+	
+	public synchronized boolean updateCall(long id, ContentValues contentValues)
+	{
+		int affectedRows = this.getWritableDB().update(CALLS_TABLE, contentValues, String.format("Id=%s", id), null);
+
+		this.getInstance().closeDatabase();
+
+		if (affectedRows != 0)
+		{
+			return true;
+		}
+
+		return false;
+	}
 
 	public synchronized boolean deleteCall(long id)
 	{
-		// int affectedRows = this.database.delete(CALLS_TABLE, String.format("Id=%s", id), null);
-
 		int affectedRows = this.getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", id), null);
 
 		this.getInstance().closeDatabase();

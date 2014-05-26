@@ -6,19 +6,23 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import net.wizartinteractive.common.Utilities;
+import net.wizartinteractive.database.DBManager;
 import net.wizartinteractive.dbmodels.Call;
 import net.wizartinteractive.dbmodels.CallType;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.PhoneLookup;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,11 +46,19 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 	// a layout inflater to inflate the events list
 	private LayoutInflater layoutInflater;
 
+	private DBManager dbManager = null;
+
 	public CallsListAdapter(Context context, int resource, ArrayList<Call> objects)
 	{
 		super(context, resource, objects);
 		this.appContext = context;
 		this.layoutInflater = (LayoutInflater) this.appContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		if (this.dbManager == null)
+		{
+			DBManager.initializeDB(this.appContext);
+			this.dbManager = DBManager.getInstance();
+		}
 	}
 
 	@Override
@@ -67,33 +79,43 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			viewHolder.phoneDirection = (ImageView) convertView.findViewById(R.id.phone_imageView);
 			viewHolder.details = (TextView) convertView.findViewById(R.id.callDetails_textView);
 			viewHolder.date = (TextView) convertView.findViewById(R.id.date_textView);
-			viewHolder.play = (ImageButton) convertView.findViewById(R.id.play_imageButton);
-			viewHolder.play.setFocusable(false);
-			viewHolder.play.setClickable(false);
+			viewHolder.popup = (ImageButton) convertView.findViewById(R.id.popup_imageButton);
+			viewHolder.popup.setFocusable(false);
+			viewHolder.popup.setClickable(false);
 
 			convertView.setTag(viewHolder);
 
-			viewHolder.play.setOnClickListener(new OnClickListener()
-			{
-				private boolean isMediaPlaying = false;
+			viewHolder.popup.setTag(tempItemList.getId());
+			viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
 
-				public void onClick(View v)
-				{
-					Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-					File file = new File(tempItemList.getFilePath());
-
-					if (file.exists())
-					{
-						viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
-						appContext.startActivity(Intent.createChooser(viewIntent, "Complete action using..."));
-					}
-					else
-					{
-						Toast toast = Toast.makeText(appContext, appContext.getString(R.string.mediaPlayingFileError), Toast.LENGTH_LONG);
-						toast.show();
-					}
-				}
-			});
+			// viewHolder.popup.setOnClickListener(new OnClickListener()
+			// {
+			// @Override
+			// public void onClick(View view)
+			// {
+			// PopupMenu popup = new PopupMenu(appContext, view);
+			// popup.setOnMenuItemClickListener(CallsListAdapter.this);
+			//
+			// MenuInflater inflater = popup.getMenuInflater();
+			// inflater.inflate(R.menu.list_popup, popup.getMenu());
+			//
+			// popup.show();
+			
+			// Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+			// File file = new File(tempItemList.getFilePath());
+			//
+			// if (file.exists())
+			// {
+			// viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
+			// appContext.startActivity(Intent.createChooser(viewIntent, "Complete action using..."));
+			// }
+			// else
+			// {
+			// Toast toast = Toast.makeText(appContext, appContext.getString(R.string.mediaPlayingFileError), Toast.LENGTH_LONG);
+			// toast.show();
+			// }
+			// }
+			// });
 		}
 		else
 		{
@@ -137,7 +159,7 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 
 		viewHolder.details.setText(String.format("%s", Utilities.ConvertMilisecondsToHMS(tempItemList.getDuration())));
 		viewHolder.date.setText(String.format("%s", Utilities.ConvertDateToShortDateString(tempItemList.getDate())));
-		viewHolder.play.setTag(tempItemList);
+		// viewHolder.play.setTag(tempItemList);
 
 		convertView.setId((int) tempItemList.getId());
 
@@ -241,6 +263,66 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 		ImageView phoneDirection;
 		TextView details;
 		TextView date;
-		ImageButton play;
+		ImageButton popup;
+	}
+
+	private class PopupClickListener implements OnClickListener, OnMenuItemClickListener
+	{
+		private Call call;
+
+		public PopupClickListener(Call call)
+		{
+			this.call = call;
+		}
+
+		@Override
+		public void onClick(View view)
+		{
+			PopupMenu popup = new PopupMenu(appContext, view);
+			popup.setOnMenuItemClickListener(this);
+
+			MenuInflater inflater = popup.getMenuInflater();
+			inflater.inflate(R.menu.list_popup, popup.getMenu());
+
+			popup.show();
+		}
+
+		@Override
+		public boolean onMenuItemClick(MenuItem menuItem)
+		{
+			switch (menuItem.getItemId())
+			{
+			case R.id.action_play:
+				
+				Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+				File file = new File(this.call.getFilePath());
+
+				if (file.exists())
+				{
+					viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
+					appContext.startActivity(Intent.createChooser(viewIntent, "Complete action using..."));
+				}
+				else
+				{
+					Toast toast = Toast.makeText(appContext, appContext.getString(R.string.mediaPlayingFileError), Toast.LENGTH_LONG);
+					toast.show();
+				}
+
+				return true;
+
+			case R.id.action_favourite:
+				
+				ContentValues values = new ContentValues();
+				values.put("Favorite", 1);
+				
+				dbManager.updateCall(this.call.getId(), values);
+
+				return true;
+
+			default:
+
+				return false;
+			}
+		}
 	}
 }

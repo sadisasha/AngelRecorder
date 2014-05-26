@@ -15,6 +15,8 @@ public class Call
 	private CallType Type;
 
 	private String FilePath;
+	
+	private boolean Favorite;
 
 	public long getId()
 	{
@@ -74,6 +76,16 @@ public class Call
 	public void setFilePath(String filePath)
 	{
 		FilePath = filePath;
+	}
+	
+	public boolean getFavorite()
+	{
+		return this.Favorite;
+	}
+	
+	public void setFavorite(boolean favorite)
+	{
+		Favorite = favorite;
 	}
 
 }

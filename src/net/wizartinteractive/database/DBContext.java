@@ -25,6 +25,7 @@ public class DBContext extends SQLiteOpenHelper
 	private static final String COLUMN_DURATION = "Duration";
 	private static final String COLUMN_TYPE = "Type";
 	private static final String COLUMN_FILEPATH = "FilePath";
+	private static final String COLUMN_FAVORITE = "Favorite";
 
 	private static final String QUERY_CREATE_TABLE = String.format("CREATE TABLE %s (" + // Table Name
 	"%s INTEGER PRIMARY KEY AUTOINCREMENT, " + // Id
@@ -32,8 +33,9 @@ public class DBContext extends SQLiteOpenHelper
 	"%s TEXT NOT NULL, " + // Date
 	"%s TEXT NOT NULL, " + // Duration
 	"%s INTEGER NOT NULL, " + //Type 
-	"%s TEXT NULL)", // FilePath
-			CALLS_TABLE, COLUMN_ID, COLUMN_INCOMING_NUMBER, COLUMN_DATE, COLUMN_DURATION, COLUMN_TYPE, COLUMN_FILEPATH);
+	"%s TEXT NULL, " + // FilePath
+	"%s NUMERIC NULL)", //Favorite 
+			CALLS_TABLE, COLUMN_ID, COLUMN_INCOMING_NUMBER, COLUMN_DATE, COLUMN_DURATION, COLUMN_TYPE, COLUMN_FILEPATH, COLUMN_FAVORITE);
 
 	public DBContext(Context context)
 	{

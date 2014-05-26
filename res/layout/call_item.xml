@@ -38,6 +38,16 @@
         android:textSize="15sp" />
 
     <ImageButton
+        android:id="@+id/popup_imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="15dp"
+        android:background="#00FFFFFF"
+        android:src="@drawable/controls_popup_button" />
+
+    <!--
+         <ImageButton
         android:id="@+id/play_imageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,7 +56,20 @@
         android:layout_marginTop="15dp"
         android:background="#00FFFFFF"
         android:focusable="false"
-        android:src="@drawable/controls_play_stop_button" />
+        android:src="@drawable/controls_play_stop_button"
+        android:visibility="visible" />
+    -->
+
+    <CheckBox
+        android:id="@+id/delete_checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/date_textView"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="18dp"
+        android:layout_marginTop="15dp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/date_textView"
