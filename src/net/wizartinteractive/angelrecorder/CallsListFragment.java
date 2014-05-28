@@ -20,12 +20,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CallsListFragment extends android.support.v4.app.Fragment implements MultiChoiceModeListener, OnMenuItemClickListener
+public class CallsListFragment extends android.support.v4.app.Fragment implements MultiChoiceModeListener
 {
 	public static final String FRAGMENT_NAME = "CALLS_LIST";
 
@@ -245,41 +248,13 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 	public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked)
 	{
 		int selectedItems = this.callsListView.getCheckedItemCount();
-
 		mode.setTitle(String.format("%s", selectedItems));
+		
+		View row = this.callsListView.getChildAt(position);
+		
+		CheckBox deleteCheck = (CheckBox) row.findViewById(R.id.delete_checkBox);
+		deleteCheck.setChecked(deleteCheck.isChecked());
 	}
-
-	@Override
-	public boolean onMenuItemClick(MenuItem menuItem)
-	{
-		switch (menuItem.getItemId())
-		{
-		case R.id.action_play:
-
-			return true;
-
-		case R.id.action_favourite:
-			
-			
-
-			return true;
-
-		default:
-
-			return false;
-		}
-	}
-
-	// public void showPopup(View view)
-	// {
-	// PopupMenu popup = new PopupMenu(appContext, view);
-	// popup.setOnMenuItemClickListener(this);
-	//
-	// MenuInflater inflater = popup.getMenuInflater();
-	// inflater.inflate(R.menu.list_popup, popup.getMenu());
-	//
-	// popup.show();
-	// }
 
 	private void deleteSelected()
 	{
@@ -313,4 +288,11 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 			this.callsListAdapter.remove(call);
 		}
 	}
+
+	// @Override
+	// public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+	// {
+	// CheckBox deleteCheck = (CheckBox) view.findViewById(R.id.delete_checkBox);
+	// deleteCheck.setChecked(deleteCheck.isChecked());
+	// }
 }

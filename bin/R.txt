@@ -245,8 +245,10 @@ int drawable ic_launcher 0x7f02005f
 int drawable ic_notification 0x7f020060
 int drawable list_item_focused 0x7f020061
 int drawable list_item_selected 0x7f020062
-int drawable selector_calls_list 0x7f020063
-int drawable splashscreen 0x7f020064
+int drawable popup_default 0x7f020063
+int drawable popup_pressed 0x7f020064
+int drawable selector_calls_list 0x7f020065
+int drawable splashscreen 0x7f020066
 int id TextView01 0x7f060048
 int id abouTitle_textView 0x7f060046
 int id aboutAppIcon_imageView 0x7f060045

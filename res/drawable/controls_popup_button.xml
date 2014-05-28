@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
         android:state_pressed="true"
-        android:drawable="@drawable/abc_ic_menu_moreoverflow_normal_holo_dark">
+        android:drawable="@drawable/popup_pressed">
 	</item>
 	<item
 	    android:state_focused="true"
-        android:drawable="@drawable/abc_ic_menu_moreoverflow_normal_holo_light">
+        android:drawable="@drawable/popup_default">
 	</item>
 	<item
-        android:drawable="@drawable/abc_ic_menu_moreoverflow_normal_holo_light">
+        android:drawable="@drawable/popup_default">
 	</item>
         
 

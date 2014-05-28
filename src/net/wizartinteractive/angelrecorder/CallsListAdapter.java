@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -86,8 +87,10 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			convertView.setTag(viewHolder);
 
 			viewHolder.popup.setTag(tempItemList.getId());
-			viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
 
+			viewHolder.deletecheck = (CheckBox) convertView.findViewById(R.id.delete_checkBox);
+
+			viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
 			// viewHolder.popup.setOnClickListener(new OnClickListener()
 			// {
 			// @Override
@@ -100,7 +103,7 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			// inflater.inflate(R.menu.list_popup, popup.getMenu());
 			//
 			// popup.show();
-			
+
 			// Intent viewIntent = new Intent(Intent.ACTION_VIEW);
 			// File file = new File(tempItemList.getFilePath());
 			//
@@ -160,6 +163,17 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 		viewHolder.details.setText(String.format("%s", Utilities.ConvertMilisecondsToHMS(tempItemList.getDuration())));
 		viewHolder.date.setText(String.format("%s", Utilities.ConvertDateToShortDateString(tempItemList.getDate())));
 		// viewHolder.play.setTag(tempItemList);
+
+		if (CallsListFragment.isDeleteMode)
+		{
+			viewHolder.deletecheck.setVisibility(View.VISIBLE);
+			viewHolder.popup.setVisibility(View.GONE);
+		}
+		else
+		{
+			viewHolder.deletecheck.setVisibility(View.GONE);
+			viewHolder.popup.setVisibility(View.VISIBLE);
+		}
 
 		convertView.setId((int) tempItemList.getId());
 
@@ -264,6 +278,7 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 		TextView details;
 		TextView date;
 		ImageButton popup;
+		CheckBox deletecheck;
 	}
 
 	private class PopupClickListener implements OnClickListener, OnMenuItemClickListener
@@ -293,7 +308,7 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			switch (menuItem.getItemId())
 			{
 			case R.id.action_play:
-				
+
 				Intent viewIntent = new Intent(Intent.ACTION_VIEW);
 				File file = new File(this.call.getFilePath());
 
@@ -311,11 +326,13 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 				return true;
 
 			case R.id.action_favourite:
-				
+
 				ContentValues values = new ContentValues();
-				values.put("Favorite", 1);
-				
+				values.put("Favorite", !this.call.getFavorite());
+
 				dbManager.updateCall(this.call.getId(), values);
+
+				CallsListAdapter.this.notifyDataSetChanged();
 
 				return true;
 
