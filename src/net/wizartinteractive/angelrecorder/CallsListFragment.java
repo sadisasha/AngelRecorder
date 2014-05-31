@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +38,8 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 	private View contentView = null;
 	private ListView callsListView = null;
 	private CallsListAdapter callsListAdapter = null;
+
+	public static boolean isDeleteMode;
 
 	public CallsListFragment()
 	{
@@ -57,7 +61,6 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 			DBManager.initializeDB(this.appContext);
 			this.dbManager = DBManager.getInstance();
 		}
-
 	}
 
 	@Override
@@ -172,6 +175,16 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 				this.callsListView.setAdapter(this.callsListAdapter);
 				this.callsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 				this.callsListView.setMultiChoiceModeListener(this);
+				this.callsListView.setOnItemLongClickListener(new OnItemLongClickListener()
+				{
+					@Override
+					public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3)
+					{
+
+						callsListView.setItemChecked(position, !callsListAdapter.isPositionChecked(position));
+						return false;
+					}
+				});
 			}
 		}
 	}
@@ -186,6 +199,8 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 	{
 		MenuInflater inflater = mode.getMenuInflater();
 		inflater.inflate(R.menu.contextual_calls_list, menu);
+
+		this.isDeleteMode = true;
 
 		return true;
 	}
@@ -202,15 +217,20 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 		switch (item.getItemId())
 		{
 		case R.id.action_deleteSelected:
-			
+
 			this.deleteSelected();
+			this.callsListAdapter.clearSelection();
+			this.isDeleteMode = false;
 			mode.finish();
 
 			return true;
 
-		case R.id.action_deleteAll:
-			
+		case R.id.action_delete:
+
 			this.deleteAll();
+			this.callsListAdapter.clearSelection();
+			this.isDeleteMode = false;
+			mode.finish();
 
 			return true;
 
@@ -223,46 +243,63 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 	@Override
 	public void onDestroyActionMode(ActionMode mode)
 	{
+		this.isDeleteMode = false;
+		this.callsListAdapter.clearSelection();
 	}
 
 	@Override
 	public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked)
 	{
 		int selectedItems = this.callsListView.getCheckedItemCount();
-		
-		mode.setTitle(String.format("%s %s", selectedItems, this.getString(R.string.messageSelectedItems)));
+		mode.setTitle(String.format("%s", selectedItems));
+
+		if (checked)
+		{
+			this.callsListAdapter.setNewSelection(position, checked);
+		}
+		else
+		{
+			this.callsListAdapter.removeSelection(position);
+		}
+
+		this.callsListAdapter.notifyDataSetChanged();
 	}
-	
+
 	private void deleteSelected()
 	{
-		SparseBooleanArray selectedItems = this.callsListView.getCheckedItemPositions();
+		SparseBooleanArray selectedItems = this.callsListAdapter.getSelectedItems();
+
 		int end = selectedItems.size();
-		
+
 		for (int i = 0; i < end; i++)
 		{
-			 if (selectedItems.get(i)) 
-			 {
-				 long id = this.callsListAdapter.getItemId(i);
-				 this.dbManager.deleteCall(id);
-			 }
-			 
-			 Call call = this.callsListAdapter.getItem(i);
-			 this.callsListAdapter.remove(call);
+			if (selectedItems.valueAt(i))
+			{
+				// long id = this.callsListAdapter.getItemId(i);
+				long id = selectedItems.keyAt(i);
+				this.dbManager.deleteCall(id);
+			}
 		}
+
+		this.refreshCallsList(this.contentView);
 	}
-	
+
 	private void deleteAll()
 	{
 		ArrayList<Call> calls = this.dbManager.getCalls();
 
 		int end = calls.size();
-		
+
 		for (int i = 0; i < end; i++)
 		{
-			 this.dbManager.deleteCall(calls.get(i).getId());
-			 
-			 Call call = this.callsListAdapter.getItem(i);
-			 this.callsListAdapter.remove(call);
+			Call call = calls.get(i);
+
+			if (!call.getFavorite())
+			{
+				this.dbManager.deleteCall(call.getId());
+			}
 		}
+
+		this.refreshCallsList(this.contentView);
 	}
 }

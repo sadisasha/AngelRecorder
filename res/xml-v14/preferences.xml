@@ -49,7 +49,7 @@
             android:entries="@array/autoDeleteOptions"
             android:entryValues="@array/autoDeleteValues"
             android:key="PreferenceAutoDeletePeriod"
-            android:summary="@string/preference_autoDeleteWeekly"
+            android:summary="@string/preference_autoDeleteSummary"
             android:title="@string/preference_autoDeleteTitle" />
     </PreferenceCategory>
 

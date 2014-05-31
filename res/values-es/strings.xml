@@ -60,7 +60,7 @@
     <!-- about info -->
     <string name="about_title">Angel Recorder</string>
     <string name="about_description">Descripción</string>
-    <string name="about_version">v0.1.1</string>
-    <string name="about_developerInfo">Desarrollado por: \n WizArt Interactive</string>
+    <string name="about_version">v0.1.0</string>
+    <string name="about_developerInfo"></string>
 
 </resources>

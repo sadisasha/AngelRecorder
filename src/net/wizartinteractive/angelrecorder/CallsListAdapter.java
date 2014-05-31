@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 import net.wizartinteractive.common.Utilities;
 import net.wizartinteractive.database.DBManager;
@@ -20,6 +22,7 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.PhoneLookup;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,15 +47,20 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 	// application context
 	private Context appContext = null;
 
+	private ArrayList<Call> calls = null;
+
 	// a layout inflater to inflate the events list
 	private LayoutInflater layoutInflater;
 
 	private DBManager dbManager = null;
 
+	private SparseBooleanArray selectedItems = null;
+
 	public CallsListAdapter(Context context, int resource, ArrayList<Call> objects)
 	{
 		super(context, resource, objects);
 		this.appContext = context;
+		this.calls = objects;
 		this.layoutInflater = (LayoutInflater) this.appContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (this.dbManager == null)
@@ -60,6 +68,8 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			DBManager.initializeDB(this.appContext);
 			this.dbManager = DBManager.getInstance();
 		}
+
+		this.selectedItems = new SparseBooleanArray();
 	}
 
 	@Override
@@ -67,7 +77,8 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 	{
 		ViewHolder viewHolder;
 
-		final Call tempItemList = getItem(position);
+		// final Call tempItemList = getItem(position);
+		final Call tempItemList = this.calls.get(position);
 
 		// this check improves performance to only create the elements to fill the device screen
 		if (convertView == null)
@@ -83,101 +94,116 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			viewHolder.popup = (ImageButton) convertView.findViewById(R.id.popup_imageButton);
 			viewHolder.popup.setFocusable(false);
 			viewHolder.popup.setClickable(false);
-
-			convertView.setTag(viewHolder);
-
+			viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
 			viewHolder.popup.setTag(tempItemList.getId());
-
 			viewHolder.deletecheck = (CheckBox) convertView.findViewById(R.id.delete_checkBox);
 
-			viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
-			// viewHolder.popup.setOnClickListener(new OnClickListener()
-			// {
-			// @Override
-			// public void onClick(View view)
-			// {
-			// PopupMenu popup = new PopupMenu(appContext, view);
-			// popup.setOnMenuItemClickListener(CallsListAdapter.this);
-			//
-			// MenuInflater inflater = popup.getMenuInflater();
-			// inflater.inflate(R.menu.list_popup, popup.getMenu());
-			//
-			// popup.show();
+			String contactName = this.getContactName(tempItemList.getIncomingNumber());
+			InputStream photo = this.getContactPhoto(tempItemList.getIncomingNumber());
 
-			// Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-			// File file = new File(tempItemList.getFilePath());
-			//
-			// if (file.exists())
-			// {
-			// viewIntent.setDataAndType(Uri.fromFile(file), "audio/*");
-			// appContext.startActivity(Intent.createChooser(viewIntent, "Complete action using..."));
-			// }
-			// else
-			// {
-			// Toast toast = Toast.makeText(appContext, appContext.getString(R.string.mediaPlayingFileError), Toast.LENGTH_LONG);
-			// toast.show();
-			// }
-			// }
-			// });
+			// contact photo
+			if (photo != null)
+			{
+				viewHolder.contact.setImageBitmap(BitmapFactory.decodeStream(photo));
+			}
+			else
+			{
+				viewHolder.contact.setImageResource(R.drawable.ic_default_contact_photo);
+			}
+
+			// contact name
+			if (contactName != null)
+			{
+				viewHolder.phoneNumber.setText(contactName);
+			}
+			else
+			{
+				viewHolder.phoneNumber.setText(tempItemList.getIncomingNumber());
+			}
+
+			// call type
+			if (tempItemList.getType().getType() == CallType.INCOMING.getType())
+			{
+				viewHolder.phoneDirection.setImageResource(android.R.drawable.sym_call_incoming);
+			}
+			else
+			{
+				viewHolder.phoneDirection.setImageResource(android.R.drawable.sym_call_outgoing);
+			}
+
+			viewHolder.details.setText(String.format("%s", Utilities.ConvertMilisecondsToHMS(tempItemList.getDuration())));
+			viewHolder.date.setText(String.format("%s", Utilities.ConvertDateToShortDateString(tempItemList.getDate())));
+
+			convertView.setId((int) tempItemList.getId());
+
+			convertView.setTag(viewHolder);
 		}
 		else
 		{
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
-		String contactName = this.getContactName(tempItemList.getIncomingNumber());
-		InputStream photo = this.getContactPhoto(tempItemList.getIncomingNumber());
-		// Uri photoUri = this.getContactPhoto(tempItemList.getIncomingNumber());
+		// if (CallsListFragment.isDeleteMode)
+		// {
+		// viewHolder.deletecheck.setVisibility(View.VISIBLE);
+		// viewHolder.popup.setVisibility(View.GONE);
+		// }
+		// else
+		// {
+		// viewHolder.deletecheck.setVisibility(View.GONE);
+		// viewHolder.popup.setVisibility(View.VISIBLE);
+		// }
 
-		// contact photo
-		if (photo != null)
+		if (this.selectedItems.get(position))
 		{
-			// viewHolder.contact.setImageURI(photoUri);
-			viewHolder.contact.setImageBitmap(BitmapFactory.decodeStream(photo));
+			convertView.setBackgroundResource(R.drawable.abc_list_pressed_holo_dark);
 		}
 		else
 		{
-			viewHolder.contact.setImageResource(R.drawable.ic_default_contact_photo);
+			if (tempItemList.getFavorite())
+			{
+				convertView.setBackgroundResource(R.drawable.list_item_focused);
+			}
+			else
+			{
+				convertView.setBackgroundResource(R.drawable.abc_list_divider_holo_dark);
+			}
 		}
-
-		// contact name
-		if (contactName != null)
-		{
-			viewHolder.phoneNumber.setText(contactName);
-		}
-		else
-		{
-			viewHolder.phoneNumber.setText(tempItemList.getIncomingNumber());
-		}
-
-		// call type
-		if (tempItemList.getType().getType() == CallType.INCOMING.getType())
-		{
-			viewHolder.phoneDirection.setImageResource(android.R.drawable.sym_call_incoming);
-		}
-		else
-		{
-			viewHolder.phoneDirection.setImageResource(android.R.drawable.sym_call_outgoing);
-		}
-
-		viewHolder.details.setText(String.format("%s", Utilities.ConvertMilisecondsToHMS(tempItemList.getDuration())));
-		viewHolder.date.setText(String.format("%s", Utilities.ConvertDateToShortDateString(tempItemList.getDate())));
-		// viewHolder.play.setTag(tempItemList);
-
-		if (CallsListFragment.isDeleteMode)
-		{
-			viewHolder.deletecheck.setVisibility(View.VISIBLE);
-			viewHolder.popup.setVisibility(View.GONE);
-		}
-		else
-		{
-			viewHolder.deletecheck.setVisibility(View.GONE);
-			viewHolder.popup.setVisibility(View.VISIBLE);
-		}
-
-		convertView.setId((int) tempItemList.getId());
 
 		return convertView;
+	}
+
+	public void setNewSelection(int position, boolean value)
+	{
+		this.selectedItems.put(position, value);
+
+		notifyDataSetChanged();
+	}
+
+	public boolean isPositionChecked(int position)
+	{
+		boolean result = this.selectedItems.get(position);
+
+		return result;
+	}
+
+	public void removeSelection(int position)
+	{
+		this.selectedItems.delete(position);
+
+		notifyDataSetChanged();
+	}
+
+	public void clearSelection()
+	{
+		this.selectedItems = new SparseBooleanArray();
+
+		notifyDataSetChanged();
+	}
+
+	public SparseBooleanArray getSelectedItems()
+	{
+		return this.selectedItems;
 	}
 
 	private String getContactName(String phoneNumber)
@@ -328,11 +354,14 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			case R.id.action_favourite:
 
 				ContentValues values = new ContentValues();
-				values.put("Favorite", !this.call.getFavorite());
+				this.call.setFavorite(!this.call.getFavorite());
+				values.put("Favorite", this.call.getFavorite());
 
 				dbManager.updateCall(this.call.getId(), values);
 
-				CallsListAdapter.this.notifyDataSetChanged();
+				calls = dbManager.getCalls();
+
+				notifyDataSetChanged();
 
 				return true;
 

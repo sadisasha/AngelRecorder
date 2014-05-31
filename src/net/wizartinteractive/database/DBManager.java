@@ -1,5 +1,6 @@
 package net.wizartinteractive.database;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -177,14 +178,14 @@ public class DBManager
 			return false;
 		}
 	}
-	
-	public synchronized boolean updateCall(long id, ContentValues contentValues)
+
+	public boolean updateCall(long id, ContentValues contentValues)
 	{
 		int affectedRows = this.getWritableDB().update(CALLS_TABLE, contentValues, String.format("Id=%s", id), null);
 
 		this.getInstance().closeDatabase();
 
-		if (affectedRows != 0)
+		if (affectedRows > 0)
 		{
 			return true;
 		}
@@ -192,8 +193,27 @@ public class DBManager
 		return false;
 	}
 
+	private boolean deleteFile(long id)
+	{
+		Call call = this.getCall(id);
+
+		File file = new File(call.getFilePath());
+
+		if (file.exists())
+		{
+			if (file.delete())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public synchronized boolean deleteCall(long id)
 	{
+		this.deleteFile(id);
+
 		int affectedRows = this.getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", id), null);
 
 		this.getInstance().closeDatabase();
@@ -212,9 +232,14 @@ public class DBManager
 
 		for (Call call : calls)
 		{
-			this.getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", call.getId()), null);
+			if (!call.getFavorite())
+			{
+				this.deleteFile(call.getId());
+
+				this.getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", call.getId()), null);
+			}
 		}
-		
+
 		this.getInstance().closeDatabase();
 
 		return true;

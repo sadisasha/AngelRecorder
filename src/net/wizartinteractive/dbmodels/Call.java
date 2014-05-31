@@ -16,7 +16,7 @@ public class Call
 
 	private String FilePath;
 	
-	private boolean Favorite;
+	private boolean Favorite = false;
 
 	public long getId()
 	{

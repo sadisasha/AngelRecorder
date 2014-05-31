@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:tag="calls_list">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/noData_textView"
@@ -23,8 +22,7 @@
         android:background="#FFFFFF"
         android:divider="#E5E5E5"
         android:dividerHeight="1dp"
-        android:listSelector="@drawable/selector_calls_list"
-        android:longClickable="true">
+        android:choiceMode="multipleChoice">
     </ListView>
 
 </LinearLayout>
