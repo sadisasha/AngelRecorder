@@ -220,10 +220,14 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 			this.callsListView.setOnItemLongClickListener(new OnItemLongClickListener()
 			{
 				@Override
-				public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3)
+				public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long id)
 				{
 					MainActivity.getInstance().startSupportActionMode(actionMode);
 					callsListAdapter.setNewSelection(position, true);
+					
+					CheckBox checkbox = (CheckBox) view.findViewById(R.id.delete_checkBox);
+					checkbox.setChecked(true);
+					
 					// callsListView.setItemChecked(position, !callsListAdapter.isPositionChecked(position));
 					return false;
 				}
