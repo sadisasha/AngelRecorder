@@ -39,7 +39,7 @@
         android:key="PREFERENCE_AUTODELETE"
         android:title="@string/preference_autoDeleteTitle" >
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="PreferenceIsAutoDeleteEnabled"
             android:summary="@string/preference_isAutoDeleteEnabledSummary"
             android:title="@string/preference_isAutoDeleteEnabledTitle" />

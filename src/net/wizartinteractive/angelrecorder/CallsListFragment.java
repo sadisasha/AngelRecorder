@@ -1,14 +1,14 @@
 package net.wizartinteractive.angelrecorder;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import net.wizartinteractive.database.DBManager;
 import net.wizartinteractive.dbmodels.Call;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.view.ActionMode;
 import android.util.SparseBooleanArray;
-import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -17,15 +17,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView.MultiChoiceModeListener;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CallsListFragment extends android.support.v4.app.Fragment implements MultiChoiceModeListener
+public class CallsListFragment extends android.support.v4.app.Fragment implements OnItemClickListener
 {
 	public static final String FRAGMENT_NAME = "CALLS_LIST";
 
@@ -40,6 +41,10 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 	private CallsListAdapter callsListAdapter = null;
 
 	public static boolean isDeleteMode;
+
+	private ActionModeCallBack actionMode = null;
+
+	private static ConfigurationManager configurationManager = null;
 
 	public CallsListFragment()
 	{
@@ -61,6 +66,17 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 			DBManager.initializeDB(this.appContext);
 			this.dbManager = DBManager.getInstance();
 		}
+
+		if (this.actionMode == null)
+		{
+			this.actionMode = new ActionModeCallBack();
+		}
+
+		if (this.configurationManager == null)
+		{
+			ConfigurationManager.Init(this.appContext);
+			this.configurationManager = ConfigurationManager.getInstance();
+		}
 	}
 
 	@Override
@@ -71,6 +87,32 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 		this.contentView = inflater.inflate(R.layout.fragment_calls_list, container, false);
 
 		this.refreshCallsList(this.contentView);
+
+		if (this.configurationManager.getAutoDeleteEnabled()) // check autodelete execution
+		{
+			Date lastExecution = this.configurationManager.getAutoDeleteLastExecution();
+			Date nextExecution = null;
+			
+			if(this.configurationManager.getAutoDeletePeriod() == 0) //daily
+			{
+				nextExecution = new Date(lastExecution.getTime() + (24 * 60 * 60 * 1000));
+			}
+			else if(this.configurationManager.getAutoDeletePeriod() == 1) //weekly
+			{
+				nextExecution = new Date(lastExecution.getTime() + (168 * 60 * 60 * 1000));
+			}
+			else if(this.configurationManager.getAutoDeletePeriod() == 2) //biweekly
+			{
+				nextExecution = new Date(lastExecution.getTime() + (336 * 60 * 60 * 1000));
+			}
+
+			if (new Date().after(nextExecution))
+			{
+				this.deleteAll();
+				this.configurationManager.setAutoCleanLastExecution(new Date());
+			}
+		}
+
 		return contentView;
 	}
 
@@ -166,26 +208,27 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 			noRecordsMessage.setVisibility(View.GONE);
 			this.callsListView = (ListView) contentView.findViewById(R.id.calls_listView);
 
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
+			// if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
+			// {
+			// registerForContextMenu(this.callsListView);
+			// }
+			// else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			// {
+			this.callsListView.setAdapter(this.callsListAdapter);
+			this.callsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+			this.callsListView.setOnItemClickListener(this);
+			this.callsListView.setOnItemLongClickListener(new OnItemLongClickListener()
 			{
-				registerForContextMenu(this.callsListView);
-			}
-			else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			{
-				this.callsListView.setAdapter(this.callsListAdapter);
-				this.callsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-				this.callsListView.setMultiChoiceModeListener(this);
-				this.callsListView.setOnItemLongClickListener(new OnItemLongClickListener()
+				@Override
+				public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 				{
-					@Override
-					public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3)
-					{
-
-						callsListView.setItemChecked(position, !callsListAdapter.isPositionChecked(position));
-						return false;
-					}
-				});
-			}
+					MainActivity.getInstance().startSupportActionMode(actionMode);
+					callsListAdapter.setNewSelection(position, true);
+					// callsListView.setItemChecked(position, !callsListAdapter.isPositionChecked(position));
+					return false;
+				}
+			});
+			// }
 		}
 	}
 
@@ -195,74 +238,25 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 	}
 
 	@Override
-	public boolean onCreateActionMode(ActionMode mode, Menu menu)
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
-		MenuInflater inflater = mode.getMenuInflater();
-		inflater.inflate(R.menu.contextual_calls_list, menu);
-
-		this.isDeleteMode = true;
-
-		return true;
-	}
-
-	@Override
-	public boolean onPrepareActionMode(ActionMode mode, Menu menu)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean onActionItemClicked(ActionMode mode, MenuItem item)
-	{
-		switch (item.getItemId())
+		if (isDeleteMode)
 		{
-		case R.id.action_deleteSelected:
+			CheckBox checkbox = (CheckBox) view.findViewById(R.id.delete_checkBox);
+			checkbox.setChecked(!checkbox.isChecked());
 
-			this.deleteSelected();
-			this.callsListAdapter.clearSelection();
-			this.isDeleteMode = false;
-			mode.finish();
+			if (checkbox.isChecked())
+			{
+				callsListAdapter.setNewSelection(position, true);
+			}
+			else
+			{
+				callsListAdapter.removeSelection(position);
+			}
 
-			return true;
-
-		case R.id.action_delete:
-
-			this.deleteAll();
-			this.callsListAdapter.clearSelection();
-			this.isDeleteMode = false;
-			mode.finish();
-
-			return true;
-
-		default:
-
-			return false;
+			MainActivity.getInstance().setTitle(String.format("%s", callsListAdapter.getSelectedItemsCount()));
+			callsListAdapter.notifyDataSetChanged();
 		}
-	}
-
-	@Override
-	public void onDestroyActionMode(ActionMode mode)
-	{
-		this.isDeleteMode = false;
-		this.callsListAdapter.clearSelection();
-	}
-
-	@Override
-	public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked)
-	{
-		int selectedItems = this.callsListView.getCheckedItemCount();
-		mode.setTitle(String.format("%s", selectedItems));
-
-		if (checked)
-		{
-			this.callsListAdapter.setNewSelection(position, checked);
-		}
-		else
-		{
-			this.callsListAdapter.removeSelection(position);
-		}
-
-		this.callsListAdapter.notifyDataSetChanged();
 	}
 
 	private void deleteSelected()
@@ -275,7 +269,6 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 		{
 			if (selectedItems.valueAt(i))
 			{
-				// long id = this.callsListAdapter.getItemId(i);
 				long id = selectedItems.keyAt(i);
 				this.dbManager.deleteCall(id);
 			}
@@ -301,5 +294,62 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 		}
 
 		this.refreshCallsList(this.contentView);
+	}
+
+	private class ActionModeCallBack implements ActionMode.Callback
+	{
+
+		@Override
+		public boolean onCreateActionMode(android.support.v7.view.ActionMode mode, Menu menu)
+		{
+			MenuInflater inflater = mode.getMenuInflater();
+			inflater.inflate(R.menu.contextual_calls_list, menu);
+
+			isDeleteMode = true;
+
+			return true;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(android.support.v7.view.ActionMode mode, Menu menu)
+		{
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(android.support.v7.view.ActionMode mode, MenuItem item)
+		{
+			switch (item.getItemId())
+			{
+			case R.id.action_deleteSelected:
+
+				deleteSelected();
+				callsListAdapter.clearSelection();
+				isDeleteMode = false;
+				mode.finish();
+
+				return true;
+
+			case R.id.action_delete:
+
+				deleteAll();
+				callsListAdapter.clearSelection();
+				isDeleteMode = false;
+				mode.finish();
+
+				return true;
+
+			default:
+
+				return false;
+			}
+		}
+
+		@Override
+		public void onDestroyActionMode(android.support.v7.view.ActionMode paramActionMode)
+		{
+			isDeleteMode = false;
+			callsListAdapter.clearSelection();
+		}
 	}
 }

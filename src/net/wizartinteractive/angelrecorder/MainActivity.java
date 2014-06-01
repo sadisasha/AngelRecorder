@@ -16,12 +16,16 @@ import android.view.ViewConfiguration;
 public class MainActivity extends ActionBarActivity
 {
 
+	private static MainActivity mainActivity = null;
+
 	private FragmentManager fragmentManager = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		this.mainActivity = this;
 
 		try
 		{
@@ -59,9 +63,6 @@ public class MainActivity extends ActionBarActivity
 	{
 		switch (item.getItemId())
 		{
-		// case R.id.action_search:
-		//
-		// break;
 
 		case R.id.action_settings:
 
@@ -70,13 +71,13 @@ public class MainActivity extends ActionBarActivity
 
 			break;
 
-		case R.id.action_about:
-
-			AboutFragment aboutFragment = new AboutFragment();
-
-			this.setMainFragmentContent(aboutFragment);
-
-			break;
+		// case R.id.action_about:
+		//
+		// AboutFragment aboutFragment = new AboutFragment();
+		//
+		// this.setMainFragmentContent(aboutFragment);
+		//
+		// break;
 
 		default:
 
@@ -132,6 +133,11 @@ public class MainActivity extends ActionBarActivity
 		{
 			this.finish();
 		}
+	}
+
+	public static MainActivity getInstance()
+	{
+		return mainActivity;
 	}
 
 	private void initializeFragmentManager()

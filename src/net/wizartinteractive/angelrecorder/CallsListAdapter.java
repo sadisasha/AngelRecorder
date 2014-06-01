@@ -94,8 +94,8 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			viewHolder.popup = (ImageButton) convertView.findViewById(R.id.popup_imageButton);
 			viewHolder.popup.setFocusable(false);
 			viewHolder.popup.setClickable(false);
-			viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
-			viewHolder.popup.setTag(tempItemList.getId());
+			// viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
+			// viewHolder.popup.setTag(tempItemList.getId());
 			viewHolder.deletecheck = (CheckBox) convertView.findViewById(R.id.delete_checkBox);
 
 			String contactName = this.getContactName(tempItemList.getIncomingNumber());
@@ -143,16 +143,16 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
-		// if (CallsListFragment.isDeleteMode)
-		// {
-		// viewHolder.deletecheck.setVisibility(View.VISIBLE);
-		// viewHolder.popup.setVisibility(View.GONE);
-		// }
-		// else
-		// {
-		// viewHolder.deletecheck.setVisibility(View.GONE);
-		// viewHolder.popup.setVisibility(View.VISIBLE);
-		// }
+		if (CallsListFragment.isDeleteMode)
+		{
+			viewHolder.deletecheck.setVisibility(View.VISIBLE);
+			viewHolder.popup.setVisibility(View.GONE);
+		}
+		else
+		{
+			viewHolder.deletecheck.setVisibility(View.GONE);
+			viewHolder.popup.setVisibility(View.VISIBLE);
+		}
 
 		if (this.selectedItems.get(position))
 		{
@@ -169,6 +169,8 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 				convertView.setBackgroundResource(R.drawable.abc_list_divider_holo_dark);
 			}
 		}
+
+		viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
 
 		return convertView;
 	}
@@ -204,6 +206,11 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 	public SparseBooleanArray getSelectedItems()
 	{
 		return this.selectedItems;
+	}
+	
+	public int getSelectedItemsCount()
+	{
+		return this.selectedItems.size();
 	}
 
 	private String getContactName(String phoneNumber)

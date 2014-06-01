@@ -6,6 +6,7 @@
         <ignore path="src/net/wizartinteractive/angelrecorder/CallsListFragment.java" />
         <ignore path="src/net/wizartinteractive/angelrecorder/ConfigurationManager.java" />
         <ignore path="src/net/wizartinteractive/angelrecorder/MainActivity.java" />
+        <ignore path="src/net/wizartinteractive/angelrecorder/MultiChoice.java" />
         <ignore path="src/net/wizartinteractive/angelrecorder/PreferencesFragment.java" />
     </issue>
 </lint>

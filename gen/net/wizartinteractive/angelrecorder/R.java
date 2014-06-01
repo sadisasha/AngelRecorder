@@ -1102,7 +1102,6 @@ containing a value of this type.
         public static final int TextView01=0x7f060048;
         public static final int abouTitle_textView=0x7f060046;
         public static final int aboutAppIcon_imageView=0x7f060045;
-        public static final int action_about=0x7f060050;
         public static final int action_bar=0x7f06001c;
         public static final int action_bar_activity_content=0x7f060015;
         public static final int action_bar_container=0x7f06001b;

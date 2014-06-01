@@ -1,5 +1,7 @@
 package net.wizartinteractive.angelrecorder;
 
+import java.util.Date;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -16,6 +18,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 	public static final String NOTIFICATIONS_ENABLED_KEY = "PreferenceAreNotificationsEnabled";
 	public static final String PHONE_NUMBER_KEY = "PhoneNumber";
 	public static final String CALL_STATE_KEY = "CallState";
+	public static final String AUTO_DELETE_ENABLED_KEY = "PreferenceIsAutoDeleteEnabled";
+	public static final String AUTO_DELETE_PERIOD_KEY = "PreferenceAutoDeletePeriod";
+	public static final String AUTO_DELETE_LAST_EXECUTION_KEY = "LastExecution";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -82,6 +87,10 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 		{
 			Intent stopRecordingServiceIntent = new Intent(getApplicationContext(), CallRecordingService.class);
 			getApplicationContext().stopService(stopRecordingServiceIntent);
+		}
+		else if (key.equals(this.AUTO_DELETE_ENABLED_KEY) && ConfigurationManager.getInstance().getAutoDeleteEnabled())
+		{
+			ConfigurationManager.getInstance().setAutoCleanLastExecution(new Date());
 		}
 	}
 }
