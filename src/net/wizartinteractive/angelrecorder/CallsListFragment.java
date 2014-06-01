@@ -17,16 +17,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CallsListFragment extends android.support.v4.app.Fragment implements OnItemClickListener
+public class CallsListFragment extends android.support.v4.app.Fragment
 {
 	public static final String FRAGMENT_NAME = "CALLS_LIST";
 
@@ -42,9 +41,11 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 
 	public static boolean isDeleteMode;
 
-	private ActionModeCallBack actionMode = null;
+	private ActionModeCallBack actionModeCallback = null;
 
 	private static ConfigurationManager configurationManager = null;
+
+	private static ActionMode actionMode = null;
 
 	public CallsListFragment()
 	{
@@ -67,9 +68,9 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 			this.dbManager = DBManager.getInstance();
 		}
 
-		if (this.actionMode == null)
+		if (this.actionModeCallback == null)
 		{
-			this.actionMode = new ActionModeCallBack();
+			this.actionModeCallback = new ActionModeCallBack();
 		}
 
 		if (this.configurationManager == null)
@@ -92,16 +93,16 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 		{
 			Date lastExecution = this.configurationManager.getAutoDeleteLastExecution();
 			Date nextExecution = null;
-			
-			if(this.configurationManager.getAutoDeletePeriod() == 0) //daily
+
+			if (this.configurationManager.getAutoDeletePeriod() == 0) // daily
 			{
 				nextExecution = new Date(lastExecution.getTime() + (24 * 60 * 60 * 1000));
 			}
-			else if(this.configurationManager.getAutoDeletePeriod() == 1) //weekly
+			else if (this.configurationManager.getAutoDeletePeriod() == 1) // weekly
 			{
 				nextExecution = new Date(lastExecution.getTime() + (168 * 60 * 60 * 1000));
 			}
-			else if(this.configurationManager.getAutoDeletePeriod() == 2) //biweekly
+			else if (this.configurationManager.getAutoDeletePeriod() == 2) // biweekly
 			{
 				nextExecution = new Date(lastExecution.getTime() + (336 * 60 * 60 * 1000));
 			}
@@ -161,6 +162,11 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 		}
 	}
 
+	public static ActionMode getActionMode()
+	{
+		return actionMode;
+	}
+
 	@Override
 	public void onStart()
 	{
@@ -171,6 +177,8 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 	public void onResume()
 	{
 		super.onResume();
+
+		this.refreshCallsList(this.contentView);
 	}
 
 	@Override
@@ -208,31 +216,17 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 			noRecordsMessage.setVisibility(View.GONE);
 			this.callsListView = (ListView) contentView.findViewById(R.id.calls_listView);
 
-			// if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-			// {
-			// registerForContextMenu(this.callsListView);
-			// }
-			// else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			// {
 			this.callsListView.setAdapter(this.callsListAdapter);
-			this.callsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-			this.callsListView.setOnItemClickListener(this);
 			this.callsListView.setOnItemLongClickListener(new OnItemLongClickListener()
 			{
 				@Override
 				public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long id)
-				{
-					MainActivity.getInstance().startSupportActionMode(actionMode);
-					callsListAdapter.setNewSelection(position, true);
-					
-					CheckBox checkbox = (CheckBox) view.findViewById(R.id.delete_checkBox);
-					checkbox.setChecked(true);
-					
-					// callsListView.setItemChecked(position, !callsListAdapter.isPositionChecked(position));
+				{	
+					actionMode = MainActivity.getInstance().startSupportActionMode(actionModeCallback);
+					actionMode.setTitle("0");
 					return false;
 				}
 			});
-			// }
 		}
 	}
 
@@ -241,30 +235,10 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 		this.calls = this.dbManager.getCalls();
 	}
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-	{
-		if (isDeleteMode)
-		{
-			CheckBox checkbox = (CheckBox) view.findViewById(R.id.delete_checkBox);
-			checkbox.setChecked(!checkbox.isChecked());
-
-			if (checkbox.isChecked())
-			{
-				callsListAdapter.setNewSelection(position, true);
-			}
-			else
-			{
-				callsListAdapter.removeSelection(position);
-			}
-
-			MainActivity.getInstance().setTitle(String.format("%s", callsListAdapter.getSelectedItemsCount()));
-			callsListAdapter.notifyDataSetChanged();
-		}
-	}
-
 	private void deleteSelected()
 	{
+		MainActivity.getInstance().setSupportProgressBarIndeterminateVisibility(true);
+		
 		SparseBooleanArray selectedItems = this.callsListAdapter.getSelectedItems();
 
 		int end = selectedItems.size();
@@ -279,10 +253,15 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 		}
 
 		this.refreshCallsList(this.contentView);
+		
+		MainActivity.getInstance().setSupportProgressBarIndeterminateVisibility(false);
 	}
 
 	private void deleteAll()
 	{
+		
+		MainActivity.getInstance().setSupportProgressBarIndeterminateVisibility(true);
+
 		ArrayList<Call> calls = this.dbManager.getCalls();
 
 		int end = calls.size();
@@ -298,6 +277,8 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 		}
 
 		this.refreshCallsList(this.contentView);
+		
+		MainActivity.getInstance().setSupportProgressBarIndeterminateVisibility(false);
 	}
 
 	private class ActionModeCallBack implements ActionMode.Callback
@@ -310,6 +291,7 @@ public class CallsListFragment extends android.support.v4.app.Fragment implement
 			inflater.inflate(R.menu.contextual_calls_list, menu);
 
 			isDeleteMode = true;
+			callsListAdapter.notifyDataSetChanged();
 
 			return true;
 		}

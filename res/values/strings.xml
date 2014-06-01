@@ -39,10 +39,10 @@
     <string name="preference_autoDeleteTitle">Autoclean</string>
     <string name="preference_autoDeleteSummary">Perform autocleaning in a period of time</string>
     <string name="preference_isAutoDeleteEnabledTitle">Enable</string>
-    <string name="preference_isAutoDeleteEnabledSummary">Enable this option to clean automatically call records.</string>
+    <string name="preference_isAutoDeleteEnabledSummary">Automatically clean up call records (Favorites won\'t be deleted).</string>
     <string name="preference_autoDeleteDaily">Daily</string>
     <string name="preference_autoDeleteWeekly">Weekly</string>
-    <string name="preference_autoDeleteMonthly">Monthly</string>
+    <string name="preference_autoDeleteMonthly">Biweekly</string>
     
     <!-- info messages -->
     <string name="messageRecordingStarted">Current call is being recorded</string>

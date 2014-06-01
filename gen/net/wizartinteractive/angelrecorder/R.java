@@ -1099,9 +1099,9 @@ containing a value of this type.
         public static final int splashscreen=0x7f020066;
     }
     public static final class id {
-        public static final int TextView01=0x7f060048;
-        public static final int abouTitle_textView=0x7f060046;
-        public static final int aboutAppIcon_imageView=0x7f060045;
+        public static final int TextView01=0x7f060049;
+        public static final int abouTitle_textView=0x7f060047;
+        public static final int aboutAppIcon_imageView=0x7f060046;
         public static final int action_bar=0x7f06001c;
         public static final int action_bar_activity_content=0x7f060015;
         public static final int action_bar_container=0x7f06001b;
@@ -1110,19 +1110,20 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f060023;
         public static final int action_bar_title=0x7f060022;
         public static final int action_context_bar=0x7f06001d;
-        public static final int action_delete=0x7f06004c;
-        public static final int action_deleteSelected=0x7f06004b;
-        public static final int action_favourite=0x7f06004e;
+        public static final int action_delete=0x7f06004d;
+        public static final int action_deleteSelected=0x7f06004c;
+        public static final int action_favourite=0x7f06004f;
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
-        public static final int action_play=0x7f06004d;
-        public static final int action_settings=0x7f06004f;
+        public static final int action_play=0x7f06004e;
+        public static final int action_settings=0x7f060050;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int beginning=0x7f060011;
         public static final int callDetails_textView=0x7f060041;
-        public static final int calls_listView=0x7f06004a;
+        public static final int call_IsFavorite=0x7f060045;
+        public static final int calls_listView=0x7f06004b;
         public static final int checkbox=0x7f06002d;
         public static final int collapseActionView=0x7f06000d;
         public static final int contact_imageView=0x7f06003f;
@@ -1146,7 +1147,7 @@ containing a value of this type.
         public static final int main_content_frame=0x7f06003c;
         public static final int middle=0x7f060012;
         public static final int never=0x7f060009;
-        public static final int noData_textView=0x7f060049;
+        public static final int noData_textView=0x7f06004a;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
         public static final int phoneNumber_textView=0x7f06003e;
@@ -1173,7 +1174,7 @@ containing a value of this type.
         public static final int split_action_bar=0x7f06001e;
         public static final int submit_area=0x7f060039;
         public static final int tabMode=0x7f060002;
-        public static final int textView1=0x7f060047;
+        public static final int textView1=0x7f060048;
         public static final int title=0x7f06002b;
         public static final int top_action_bar=0x7f060020;
         public static final int up=0x7f060021;

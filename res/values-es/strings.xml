@@ -36,13 +36,13 @@
     <string name="preference_outputFormat_MPEG_4">MPEG4/MP4</string>
     
     <!-- automatic delete preferences -->
-    <string name="preference_autoDeleteTitle">Limpieza Automåtica</string>
+    <string name="preference_autoDeleteTitle">Limpieza Automática</string>
     <string name="preference_autoDeleteSummary">Active esta opcion para limpiar los resgistros de llamadas automaticamente</string>
     <string name="preference_isAutoDeleteEnabledTitle">Activado</string>
-    <string name="preference_isAutoDeleteEnabledSummary">Active esta opcion para borrar los registros de llamadas automaticamente.</string>
-    <string name="preference_autoDeleteDaily">Diariamente</string>
-    <string name="preference_autoDeleteWeekly">Semanalmente</string>
-    <string name="preference_autoDeleteMonthly">Mensualmente</string>
+    <string name="preference_isAutoDeleteEnabledSummary">Borra registros de llamadas automaticamente (Favoritos no se eliminarán).</string>
+    <string name="preference_autoDeleteDaily">Diario</string>
+    <string name="preference_autoDeleteWeekly">Semanal</string>
+    <string name="preference_autoDeleteMonthly">Quincenal</string>
 
     <!-- info messages -->
     <string name="messageRecordingStarted">Grabando llamada en curso</string>

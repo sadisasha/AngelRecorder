@@ -181,7 +181,7 @@ public class DBManager
 
 	public boolean updateCall(long id, ContentValues contentValues)
 	{
-		int affectedRows = this.getWritableDB().update(CALLS_TABLE, contentValues, String.format("Id=%s", id), null);
+		int affectedRows = this.getInstance().getWritableDB().update(CALLS_TABLE, contentValues, String.format("Id=%s", id), null);
 
 		this.getInstance().closeDatabase();
 
@@ -214,7 +214,7 @@ public class DBManager
 	{
 		this.deleteFile(id);
 
-		int affectedRows = this.getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", id), null);
+		int affectedRows = this.getInstance().getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", id), null);
 
 		this.getInstance().closeDatabase();
 
@@ -236,7 +236,7 @@ public class DBManager
 			{
 				this.deleteFile(call.getId());
 
-				this.getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", call.getId()), null);
+				this.getInstance().getWritableDB().delete(CALLS_TABLE, String.format("Id=%s", call.getId()), null);
 			}
 		}
 

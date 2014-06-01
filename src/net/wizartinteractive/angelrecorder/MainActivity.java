@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewConfiguration;
+import android.view.Window;
 
 public class MainActivity extends ActionBarActivity
 {
@@ -24,6 +25,8 @@ public class MainActivity extends ActionBarActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
+		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 		this.mainActivity = this;
 

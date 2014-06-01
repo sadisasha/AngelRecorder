@@ -4,8 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
 
 import net.wizartinteractive.common.Utilities;
 import net.wizartinteractive.database.DBManager;
@@ -31,8 +29,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,7 +78,6 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 	{
 		ViewHolder viewHolder;
 
-		// final Call tempItemList = getItem(position);
 		final Call tempItemList = this.calls.get(position);
 
 		// this check improves performance to only create the elements to fill the device screen
@@ -92,49 +92,8 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			viewHolder.details = (TextView) convertView.findViewById(R.id.callDetails_textView);
 			viewHolder.date = (TextView) convertView.findViewById(R.id.date_textView);
 			viewHolder.popup = (ImageButton) convertView.findViewById(R.id.popup_imageButton);
-			viewHolder.popup.setFocusable(false);
-			viewHolder.popup.setClickable(false);
-			// viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
-			// viewHolder.popup.setTag(tempItemList.getId());
 			viewHolder.deletecheck = (CheckBox) convertView.findViewById(R.id.delete_checkBox);
-
-			String contactName = this.getContactName(tempItemList.getIncomingNumber());
-			InputStream photo = this.getContactPhoto(tempItemList.getIncomingNumber());
-
-			// contact photo
-			if (photo != null)
-			{
-				viewHolder.contact.setImageBitmap(BitmapFactory.decodeStream(photo));
-			}
-			else
-			{
-				viewHolder.contact.setImageResource(R.drawable.ic_default_contact_photo);
-			}
-
-			// contact name
-			if (contactName != null)
-			{
-				viewHolder.phoneNumber.setText(contactName);
-			}
-			else
-			{
-				viewHolder.phoneNumber.setText(tempItemList.getIncomingNumber());
-			}
-
-			// call type
-			if (tempItemList.getType().getType() == CallType.INCOMING.getType())
-			{
-				viewHolder.phoneDirection.setImageResource(android.R.drawable.sym_call_incoming);
-			}
-			else
-			{
-				viewHolder.phoneDirection.setImageResource(android.R.drawable.sym_call_outgoing);
-			}
-
-			viewHolder.details.setText(String.format("%s", Utilities.ConvertMilisecondsToHMS(tempItemList.getDuration())));
-			viewHolder.date.setText(String.format("%s", Utilities.ConvertDateToShortDateString(tempItemList.getDate())));
-
-			convertView.setId((int) tempItemList.getId());
+			viewHolder.favoriteMark = (LinearLayout) convertView.findViewById(R.id.call_IsFavorite);
 
 			convertView.setTag(viewHolder);
 		}
@@ -143,57 +102,105 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
+		viewHolder.popup.setFocusable(false);
+		viewHolder.popup.setClickable(false);
+
+		String contactName = this.getContactName(tempItemList.getIncomingNumber());
+		InputStream photo = this.getContactPhoto(tempItemList.getIncomingNumber());
+
+		// contact photo
+		if (photo != null)
+		{
+			viewHolder.contact.setImageBitmap(BitmapFactory.decodeStream(photo));
+		}
+		else
+		{
+			viewHolder.contact.setImageResource(R.drawable.ic_default_contact_photo);
+		}
+
+		// contact name
+		if (contactName != null)
+		{
+			viewHolder.phoneNumber.setText(contactName);
+		}
+		else
+		{
+			viewHolder.phoneNumber.setText(tempItemList.getIncomingNumber());
+		}
+
+		// call type
+		if (tempItemList.getType().getType() == CallType.INCOMING.getType())
+		{
+			viewHolder.phoneDirection.setImageResource(android.R.drawable.sym_call_incoming);
+		}
+		else
+		{
+			viewHolder.phoneDirection.setImageResource(android.R.drawable.sym_call_outgoing);
+		}
+
+		if (tempItemList.getFavorite())
+		{
+			viewHolder.favoriteMark.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			viewHolder.favoriteMark.setVisibility(View.GONE);
+		}
+
+		viewHolder.details.setText(String.format("%s", Utilities.ConvertMilisecondsToHMS(tempItemList.getDuration())));
+		viewHolder.date.setText(String.format("%s", Utilities.ConvertDateToShortDateString(tempItemList.getDate())));
+
 		if (CallsListFragment.isDeleteMode)
 		{
 			viewHolder.deletecheck.setVisibility(View.VISIBLE);
 			viewHolder.popup.setVisibility(View.GONE);
+			
+			viewHolder.deletecheck.setOnCheckedChangeListener(new OnCheckedChangeListener()
+			{
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+				{
+					int id = buttonView.getId();
+
+					if (isChecked)
+					{
+						setNewSelection(id, isChecked);
+					}
+					else
+					{
+						removeSelection(id);
+					}
+				}
+			});
 		}
 		else
 		{
+			viewHolder.deletecheck.setChecked(false);
 			viewHolder.deletecheck.setVisibility(View.GONE);
 			viewHolder.popup.setVisibility(View.VISIBLE);
 		}
 
-		if (this.selectedItems.get(position))
-		{
-			convertView.setBackgroundResource(R.drawable.abc_list_pressed_holo_dark);
-		}
-		else
-		{
-			if (tempItemList.getFavorite())
-			{
-				convertView.setBackgroundResource(R.drawable.list_item_focused);
-			}
-			else
-			{
-				convertView.setBackgroundResource(R.drawable.abc_list_divider_holo_dark);
-			}
-		}
+		viewHolder.deletecheck.setId((int) tempItemList.getId());
 
 		viewHolder.popup.setOnClickListener(new PopupClickListener(tempItemList));
+
+		convertView.setId((int) tempItemList.getId());
 
 		return convertView;
 	}
 
-	public void setNewSelection(int position, boolean value)
+	public void setNewSelection(int id, boolean value)
 	{
-		this.selectedItems.put(position, value);
+		this.selectedItems.put(id, value);
 
-		notifyDataSetChanged();
+		this.setContextActionBarTitle(String.format("%s", this.getSelectedItemsCount()));
 	}
 
-	public boolean isPositionChecked(int position)
+	public void removeSelection(int id)
 	{
-		boolean result = this.selectedItems.get(position);
+		this.selectedItems.delete(id);
 
-		return result;
-	}
-
-	public void removeSelection(int position)
-	{
-		this.selectedItems.delete(position);
-
-		notifyDataSetChanged();
+		this.setContextActionBarTitle(String.format("%s", this.getSelectedItemsCount()));
 	}
 
 	public void clearSelection()
@@ -207,10 +214,15 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 	{
 		return this.selectedItems;
 	}
-	
+
 	public int getSelectedItemsCount()
 	{
 		return this.selectedItems.size();
+	}
+
+	private void setContextActionBarTitle(String title)
+	{
+		CallsListFragment.getActionMode().setTitle(title);
 	}
 
 	private String getContactName(String phoneNumber)
@@ -312,6 +324,7 @@ public class CallsListAdapter extends ArrayAdapter<Call>
 		TextView date;
 		ImageButton popup;
 		CheckBox deletecheck;
+		LinearLayout favoriteMark;
 	}
 
 	private class PopupClickListener implements OnClickListener, OnMenuItemClickListener
