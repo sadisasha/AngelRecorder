@@ -48,13 +48,13 @@
     <string name="messageRecordingStarted">Grabando llamada en curso</string>
     <string name="messageRecordingStopped">La llamada fue grabada exitosamente</string>
     <string name="messageNoData">No existen registros de grabaciones</string>
+    <string name="messageDeleteSuccesfull">Registro eliminado exitosamente</string>
     <string name="messageSelectedItems">Seleccionados</string>
 
     <!-- error messages -->
     <string name="phoneCompatibilityError">El origen del audio seleccionado no es soportado en su telefono, intente con alguna otra fuente de audio</string>
     <string name="phoneRecordgingError">Ha ocurrido un error durante la grabación, la llamada no será grabada</string>
     <string name="mediaPlayingFileError">Error, no se encuentra el archivo</string>
-    <string name="messageDeleteSuccesfull">Registro eliminado exitosamente</string>
     <string name="messageDeleteError">Ocurrió un error al borrar, intentelo de nuevo</string>
 
     <!-- about info -->

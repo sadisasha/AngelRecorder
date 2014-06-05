@@ -58,12 +58,14 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 	protected void onResume()
 	{
 		super.onResume();
+		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
 	protected void onPause()
 	{
 		super.onPause();
+		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override

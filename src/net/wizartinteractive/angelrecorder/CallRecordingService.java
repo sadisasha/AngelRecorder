@@ -274,7 +274,17 @@ public class CallRecordingService extends Service implements Runnable
 				notificationBuilder.setContentText(message);
 				notificationBuilder.setAutoCancel(true);
 
-				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
+				Intent resultIntent = new Intent(this, NotificationActivity.class);
+				resultIntent.putExtra("message", message);
+				android.app.TaskStackBuilder stackBuilder = android.app.TaskStackBuilder.create(this);
+				stackBuilder.addParentStack(NotificationActivity.class);
+
+				stackBuilder.addNextIntent(resultIntent);
+
+				// PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
+				// notificationBuilder.setContentIntent(pendingIntent);
+
+				PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 				notificationBuilder.setContentIntent(pendingIntent);
 
 				Notification notification = notificationBuilder.build();
@@ -299,7 +309,17 @@ public class CallRecordingService extends Service implements Runnable
 				notificationBuilder.setContentText(message);
 				notificationBuilder.setAutoCancel(true);
 
-				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
+				Intent resultIntent = new Intent(this, NotificationActivity.class);
+				resultIntent.putExtra("message", message);
+				android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder.create(this);
+				stackBuilder.addParentStack(NotificationActivity.class);
+
+				stackBuilder.addNextIntent(resultIntent);
+
+				// PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
+				// notificationBuilder.setContentIntent(pendingIntent);
+
+				PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 				notificationBuilder.setContentIntent(pendingIntent);
 
 				Notification notification = notificationBuilder.build();

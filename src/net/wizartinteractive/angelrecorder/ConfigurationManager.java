@@ -62,7 +62,7 @@ public class ConfigurationManager
 
 	public int getAudioSource()
 	{
-		return Integer.parseInt(this.preferences.getString(PreferencesActivity.AUDIO_SOURCE_KEY, String.format("%s", MediaRecorder.AudioSource.VOICE_CALL)));
+		return Integer.parseInt(this.preferences.getString(PreferencesActivity.AUDIO_SOURCE_KEY, String.format("%s", MediaRecorder.AudioSource.MIC)));
 	}
 
 	public int getAudioFormat()
