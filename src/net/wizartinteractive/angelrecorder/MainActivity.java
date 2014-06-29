@@ -25,7 +25,7 @@ public class MainActivity extends ActionBarActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 		this.mainActivity = this;
@@ -74,13 +74,12 @@ public class MainActivity extends ActionBarActivity
 
 			break;
 
-		// case R.id.action_about:
-		//
-		// AboutFragment aboutFragment = new AboutFragment();
-		//
-		// this.setMainFragmentContent(aboutFragment);
-		//
-		// break;
+		case R.id.action_about:
+
+			Intent aboutIntent = new Intent(MainActivity.this, AboutActivity.class);
+			this.startActivity(aboutIntent);
+
+			break;
 
 		default:
 
